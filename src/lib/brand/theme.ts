@@ -103,5 +103,7 @@ export function brandCss(brand: BrandSettings | null, dir: "rtl" | "ltr", opts: 
   const dark = paletteVars(brand?.colors?.dark, FALLBACK_PALETTES.dark);
   const pattern = brand?.backgrounds?.pattern === "none" ? ".bg-measure{background-image:none!important}" : "";
   const faces = customFontFaces(opts.customFonts ?? [], fonts.families);
-  return `${faces}:root{${light};--radius:${radius};--f-display:${fonts.display};--f-body:${fonts.body}}[data-theme="dark"]{${dark}}${pattern}`;
+  const inkPrimary = safeColor(brand?.colors?.dark?.primary, FALLBACK_PALETTES.dark.primary);
+  const ink = `--c-ink-primary:${inkPrimary};--c-ink-on-primary:${onColor(inkPrimary)}`;
+  return `${faces}:root{${light};${ink};--radius:${radius};--f-display:${fonts.display};--f-body:${fonts.body}}[data-theme="dark"]{${dark}}${pattern}`;
 }

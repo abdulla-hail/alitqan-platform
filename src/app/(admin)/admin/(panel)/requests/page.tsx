@@ -50,7 +50,32 @@ export default async function RequestsPage({ searchParams }: { searchParams: SP 
       {!data?.length ? (
         <div className="card p-12 text-center text-muted">{d.no_items}</div>
       ) : (
-        <div className="card overflow-x-auto">
+        <>
+        <ul className="space-y-2 md:hidden">
+          {data.map((r, i) => {
+            const st = REQUEST_STATUS[r.status];
+            return (
+              <li key={r.id} data-anim="up" style={{ ["--i" as string]: Math.min(i, 8) }}>
+                <Link href={`/admin/requests/${r.id}`} className={`card card-hover block p-4 ${r.status === "new" ? "border-s-4 border-s-accent" : ""}`}>
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="min-w-0">
+                      <p className="truncate font-semibold">{r.name}</p>
+                      <p className="truncate text-xs text-muted" dir="ltr">{r.email}</p>
+                    </div>
+                    <span className={`flex-none rounded-full px-2.5 py-0.5 text-xs font-semibold ${st?.tone}`}>{st?.[locale] ?? r.status}</span>
+                  </div>
+                  <div className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted">
+                    <span className="font-mono text-primary" dir="ltr">{r.reference}</span>
+                    <span>{r.service_label || "—"}</span>
+                    <span>{fmt(r.created_at)}</span>
+                    {r.priority === "high" && <span className="font-bold text-danger">!</span>}
+                  </div>
+                </Link>
+              </li>
+            );
+          })}
+        </ul>
+        <div className="card hidden overflow-x-auto md:block">
           <table className="w-full min-w-[760px] text-sm">
             <thead><tr className="border-b border-line text-muted"><th className="p-3 text-start">#</th><th className="p-3 text-start">{locale === "ar" ? "العميل" : "Client"}</th><th className="p-3 text-start">{locale === "ar" ? "الخدمة" : "Service"}</th><th className="p-3 text-start">{d.status}</th><th className="p-3 text-start">{d.followup}</th><th className="p-3 text-start">{d.created}</th></tr></thead>
             <tbody>
@@ -58,7 +83,7 @@ export default async function RequestsPage({ searchParams }: { searchParams: SP 
                 const st = REQUEST_STATUS[r.status];
                 const files = (r.request_attachments as unknown as { count: number }[])?.[0]?.count ?? 0;
                 return (
-                  <tr key={r.id} className="border-b border-line/60 hover:bg-subtle">
+                  <tr key={r.id} className={`border-b border-line/60 transition-colors hover:bg-subtle ${r.status === "new" ? "bg-accent-soft/40" : ""}`}>
                     <td className="p-3"><Link href={`/admin/requests/${r.id}`} className="font-mono text-xs text-primary" dir="ltr">{r.reference}</Link>{r.kind === "quote" && <span className="ms-2 rounded bg-secondary/15 px-1.5 text-[10px] font-bold text-secondary">QUOTE</span>}</td>
                     <td className="p-3"><Link href={`/admin/requests/${r.id}`} className="font-semibold hover:text-primary">{r.name}</Link><p className="text-xs text-muted" dir="ltr">{r.email}{r.company ? ` · ${r.company}` : ""}</p></td>
                     <td className="p-3">{r.service_label || "—"}{files > 0 && <Paperclip className="ms-1 inline h-3.5 w-3.5 text-muted" />}</td>
@@ -71,6 +96,7 @@ export default async function RequestsPage({ searchParams }: { searchParams: SP 
             </tbody>
           </table>
         </div>
+        </>
       )}
       {pages > 1 && (
         <nav className="mt-4 flex flex-wrap gap-1">

@@ -23,9 +23,10 @@ export default async function ContactPage({ params }: LocaleParams) {
       <RenderSections sections={sections.filter((s) => s.type === "page_header")} ctx={ctx} />
       <section className="section">
         <div className="container-x grid grid-cols-1 gap-12 lg:grid-cols-12">
-          <div className="lg:col-span-5">
+          <div className="ink stage h-fit p-6 sm:p-8 lg:sticky lg:top-28 lg:col-span-5">
+            <div className="bg-measure pointer-events-none absolute inset-0 -z-10 opacity-25" aria-hidden />
             <h2 className="text-2xl font-bold">{ctx.t("footer.contact")}</h2>
-            <div className="mt-6"><ContactDetails ctx={ctx} compact /></div>
+            <div className="mt-6 [&_.card]:!bg-white/5"><ContactDetails ctx={ctx} compact /></div>
             <SocialLinks social={ctx.settings.social ?? {}} className="mt-6" />
           </div>
           <div className="lg:col-span-7">

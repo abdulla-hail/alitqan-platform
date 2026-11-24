@@ -25,7 +25,7 @@ export default async function ProjectsPage({ params }: LocaleParams) {
       <section className="section">
         <div className="container-x">
           <FilterableGrid
-            className="grid grid-cols-1 gap-x-8 gap-y-14 md:grid-cols-2 lg:grid-cols-3"
+            className="grid grid-cols-1 gap-x-8 gap-y-14 md:grid-cols-2 lg:grid-cols-3 md:[&>li:first-child]:col-span-2"
             categories={categories.filter((c) => projects.some((p) => p.category_id === c.id)).map((c) => ({ value: c.id, label: L(c.name) }))}
             labels={{ all: ctx.t("common.all"), search: ctx.t("projects.search_placeholder"), empty: ctx.t("projects.no_results") }}
             meta={projects.map((p) => ({

@@ -257,6 +257,14 @@ insert into translations(key,locale,value,group_key) values ('slider.slide','ar'
 insert into translations(key,locale,value,group_key) values ('slider.slide','en','Slide','slider') on conflict (key,locale) do nothing;
 insert into translations(key,locale,value,group_key) values ('slider.of','ar','من','slider') on conflict (key,locale) do nothing;
 insert into translations(key,locale,value,group_key) values ('slider.of','en','of','slider') on conflict (key,locale) do nothing;
+insert into translations(key,locale,value,group_key) values ('common.services','ar','خدماتنا','common') on conflict (key,locale) do nothing;
+insert into translations(key,locale,value,group_key) values ('common.services','en','What we do','common') on conflict (key,locale) do nothing;
+insert into translations(key,locale,value,group_key) values ('footer.cta_title','ar','لديك فكرة؟ لنصنعها بإتقان.','footer') on conflict (key,locale) do nothing;
+insert into translations(key,locale,value,group_key) values ('footer.cta_title','en','Have an idea? Let''s build it precisely.','footer') on conflict (key,locale) do nothing;
+insert into translations(key,locale,value,group_key) values ('footer.cta_button','ar','ابدأ مشروعك','footer') on conflict (key,locale) do nothing;
+insert into translations(key,locale,value,group_key) values ('footer.cta_button','en','Start a project','footer') on conflict (key,locale) do nothing;
+insert into translations(key,locale,value,group_key) values ('footer.back_to_top','ar','للأعلى','footer') on conflict (key,locale) do nothing;
+insert into translations(key,locale,value,group_key) values ('footer.back_to_top','en','Back to top','footer') on conflict (key,locale) do nothing;
 insert into site_settings(key,value,is_public) values ('general','{"site_url":"https://alitqan.com","copyright":{"ar":"إتقان","en":"ALITQAN"}}'::jsonb,true) on conflict (key) do nothing;
 insert into site_settings(key,value,is_public) values ('contact','{"email":"hello@alitqan.com","phones":["+966 50 000 0000"],"whatsapp":"+966500000000","address":{"ar":"الرياض، المملكة العربية السعودية","en":"Riyadh, Saudi Arabia"},"hours":{"ar":"الأحد – الخميس، 9 صباحاً – 6 مساءً","en":"Sunday – Thursday, 9 am – 6 pm"},"map_url":""}'::jsonb,true) on conflict (key) do nothing;
 insert into site_settings(key,value,is_public) values ('social','{"linkedin":"https://www.linkedin.com/","x":"https://x.com/","instagram":"https://www.instagram.com/","behance":"https://www.behance.net/","github":"","youtube":"","tiktok":"","facebook":""}'::jsonb,true) on conflict (key) do nothing;

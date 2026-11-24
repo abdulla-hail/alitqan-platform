@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { RenderSections } from "@/components/sections/Sections";
-import { ServiceCard } from "@/components/site/cards";
+import { ServiceRow } from "@/components/site/cards";
 import { Icon } from "@/components/ui/Icon";
 import { Reveal } from "@/components/ui/Reveal";
 import { cmsPageMetadata, type LocaleParams } from "@/features/site/page-helpers";
@@ -18,23 +18,21 @@ export async function generateMetadata({ params }: LocaleParams) {
 export default async function ServicesPage({ params }: LocaleParams) {
   const { locale } = await params;
   const [ctx, page, categories, services] = await Promise.all([getSiteContext(locale), getPage("services"), getServiceCategories(), getServices()]);
+  const L = (v: Parameters<typeof pick>[0]) => pick(v, locale, ctx.defaultLocale);
   const sections = page?.sections ?? [];
-  const header = sections.filter((s) => s.type === "page_header");
-  const rest = sections.filter((s) => s.type !== "page_header");
-  const grouped = categories
-    .map((c) => ({ category: c, items: services.filter((s) => s.category_id === c.id) }))
-    .filter((g) => g.items.length);
+  const grouped = categories.map((c) => ({ category: c, items: services.filter((s) => s.category_id === c.id) })).filter((g) => g.items.length);
   const uncategorised = services.filter((s) => !s.category_id || !categories.some((c) => c.id === s.category_id));
+  let n = 0;
   return (
     <>
-      <RenderSections sections={header} ctx={ctx} />
+      <RenderSections sections={sections.filter((s) => s.type === "page_header")} ctx={ctx} />
       {grouped.length > 1 && (
-        <nav className="sticky top-[72px] z-30 border-b border-line bg-bg/85 backdrop-blur" aria-label={ctx.t("common.all")}>
-          <ul className="container-x flex gap-2 overflow-x-auto py-3">
-            {grouped.map(({ category }) => (
+        <nav className="sticky top-[calc(var(--header-h)+env(safe-area-inset-top))] z-30 border-y border-line bg-bg/90 backdrop-blur" aria-label={ctx.t("common.services")}>
+          <ul className="container-x flex gap-2 overflow-x-auto py-3 [scrollbar-width:none]">
+            {grouped.map(({ category }, i) => (
               <li key={category.id}>
-                <Link href={`#${category.slug}`} className="chip whitespace-nowrap hover:border-primary">
-                  {pick(category.name, locale, ctx.defaultLocale)}
+                <Link href={`#${category.slug}`} className="chip whitespace-nowrap transition-colors hover:border-primary hover:text-primary">
+                  <span className="num text-xs text-muted">{String(i + 1).padStart(2, "0")}</span>{L(category.name)}
                 </Link>
               </li>
             ))}
@@ -42,29 +40,28 @@ export default async function ServicesPage({ params }: LocaleParams) {
         </nav>
       )}
       {grouped.map(({ category, items }, gi) => (
-        <section key={category.id} id={category.slug} className={`section scroll-mt-32 ${gi % 2 ? "bg-softer" : ""}`}>
-          <div className="container-x">
-            <div className="mb-10 flex items-start gap-4">
-              <span className="icon-tile h-12 w-12"><Icon name={category.icon} className="h-6 w-6" /></span>
-              <div>
-                <h2 className="h-section">{pick(category.name, locale, ctx.defaultLocale)}</h2>
-                <p className="lead mt-2">{pick(category.description, locale, ctx.defaultLocale)}</p>
+        <section key={category.id} id={category.slug} className={`section scroll-mt-36 ${gi % 2 ? "bg-softer" : ""}`}>
+          <div className="container-x grid grid-cols-1 gap-10 lg:grid-cols-12">
+            <Reveal variant="up" className="lg:col-span-4">
+              <div className="lg:sticky lg:top-40">
+                <span className="icon-tile h-12 w-12"><Icon name={category.icon} className="h-6 w-6" /></span>
+                <p className="kicker mt-6">{String(gi + 1).padStart(2, "0")} / {String(grouped.length).padStart(2, "0")}</p>
+                <h2 className="h-section mt-2">{L(category.name)}</h2>
+                <p className="lead mt-3">{L(category.description)}</p>
               </div>
-            </div>
-            <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
-              {items.map((s, i) => <Reveal key={s.id} delay={(i % 3) * 70}><ServiceCard service={s} ctx={ctx} /></Reveal>)}
+            </Reveal>
+            <div className="lg:col-span-8">
+              {items.map((s, i) => <Reveal key={s.id} i={i} variant="up"><ServiceRow service={s} ctx={ctx} index={n++} /></Reveal>)}
             </div>
           </div>
         </section>
       ))}
       {uncategorised.length > 0 && (
         <section className="section">
-          <div className="container-x grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
-            {uncategorised.map((s) => <ServiceCard key={s.id} service={s} ctx={ctx} />)}
-          </div>
+          <div className="container-x">{uncategorised.map((s) => <ServiceRow key={s.id} service={s} ctx={ctx} index={n++} />)}</div>
         </section>
       )}
-      <RenderSections sections={rest} ctx={ctx} />
+      <RenderSections sections={sections.filter((s) => s.type !== "page_header")} ctx={ctx} />
     </>
   );
 }

@@ -21,7 +21,19 @@ export default async function ActivityPage({ searchParams }: { searchParams: Pro
         <Link href="/admin/activity" className={`chip ${!sp.entity ? "chip-active" : ""}`}>{d.all}</Link>
         {entities.map((e) => <Link key={e} href={`/admin/activity?entity=${e}`} className={`chip font-mono text-xs ${sp.entity === e ? "chip-active" : ""}`}>{e}</Link>)}
       </div>
-      <div className="card overflow-x-auto">
+      <ul className="space-y-2 md:hidden">
+        {(data ?? []).map((a) => (
+          <li key={a.id} className="card p-3 text-sm">
+            <div className="flex items-center justify-between gap-2">
+              <span className={`rounded px-1.5 py-0.5 font-mono text-xs ${a.action === "delete" ? "bg-danger/12 text-danger" : a.action === "insert" ? "bg-success/12 text-success" : "bg-subtle"}`}>{a.action}</span>
+              <span className="text-xs text-muted">{fmt(a.created_at)}</span>
+            </div>
+            <p className="mt-2 font-medium">{a.summary || "—"}</p>
+            <p className="mt-1 text-xs text-muted"><span className="font-mono">{a.entity_type}</span> · <span dir="ltr">{a.actor_email ?? "system"}</span></p>
+          </li>
+        ))}
+      </ul>
+      <div className="card hidden overflow-x-auto md:block">
         <table className="w-full min-w-[720px] text-sm">
           <tbody>
             {(data ?? []).map((a) => (

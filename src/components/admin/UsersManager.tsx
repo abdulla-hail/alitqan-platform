@@ -22,7 +22,7 @@ export function UsersManager({ users, roles, meId, myRole }: { users: U[]; roles
       <PageTitle title={d.users} subtitle={ar ? "الصلاحيات تُفرض في قاعدة البيانات؛ لا يمكن لأي مستخدم تعديل دوره بنفسه." : "Permissions are enforced in the database; nobody can change their own role."}
         actions={<button className="btn btn-primary" onClick={() => setInv({ email: "", full_name: "", role_key: "editor", password: "" })}><Plus className="h-4 w-4" />{ar ? "إضافة مستخدم" : "Add user"}</button>} />
       <div className="card overflow-x-auto">
-        <table className="w-full min-w-[720px] text-sm">
+        <table className="w-full text-sm max-md:[&_thead]:hidden max-md:[&_tr]:grid max-md:[&_tr]:grid-cols-[1fr_auto] max-md:[&_tr]:gap-2 max-md:[&_tr]:p-3 max-md:[&_td]:p-0 md:min-w-[720px]">
           <thead><tr className="border-b border-line text-muted"><th className="p-3 text-start">{ar ? "المستخدم" : "User"}</th><th className="p-3 text-start">{ar ? "الدور" : "Role"}</th><th className="p-3 text-start">{d.status}</th><th className="p-3 text-start">{ar ? "آخر دخول" : "Last sign-in"}</th><th className="p-3" /></tr></thead>
           <tbody>
             {users.map((u) => {

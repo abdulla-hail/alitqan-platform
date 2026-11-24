@@ -1,12 +1,13 @@
 import type { Metadata } from "next";
-import { publicEnv } from "@/lib/env";
+import { normalizeSiteUrl, publicEnv } from "@/lib/env";
 import { pick } from "@/lib/i18n";
 import type { SiteContext } from "@/services/site";
 import type { Localized, Seo } from "@/types/content";
 
 export function siteUrl(ctx?: SiteContext) {
-  const fromSettings = ctx?.settings?.general?.site_url;
-  return (process.env.NEXT_PUBLIC_SITE_URL ? publicEnv.siteUrl : fromSettings || publicEnv.siteUrl).replace(/\/$/, "");
+  // env (normalised) wins; otherwise the CMS setting; never an invalid URL
+  if (normalizeSiteUrl(process.env.NEXT_PUBLIC_SITE_URL)) return publicEnv.siteUrl;
+  return normalizeSiteUrl(ctx?.settings?.general?.site_url) ?? publicEnv.siteUrl;
 }
 
 const absolute = (base: string, u?: string | null) => (!u ? undefined : /^https?:/.test(u) ? u : `${base}${u.startsWith("/") ? "" : "/"}${u}`);

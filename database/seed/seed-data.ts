@@ -153,6 +153,10 @@ export const translations: Record<string, T> = {
   "slider.region": t("معرض المشاريع", "Projects carousel"),
   "slider.slide": t("الشريحة", "Slide"),
   "slider.of": t("من", "of"),
+  "common.services": t("خدماتنا", "What we do"),
+  "footer.cta_title": t("لديك فكرة؟ لنصنعها بإتقان.", "Have an idea? Let's build it precisely."),
+  "footer.cta_button": t("ابدأ مشروعك", "Start a project"),
+  "footer.back_to_top": t("للأعلى", "Back to top"),
 };
 
 export const settings: Record<string, { value: unknown; is_public?: boolean }> = {

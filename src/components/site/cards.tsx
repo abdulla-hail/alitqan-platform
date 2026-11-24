@@ -138,3 +138,45 @@ export function TestimonialCard({ item, ctx }: { item: Testimonial; ctx: SiteCon
     </figure>
   );
 }
+
+/** Editorial index row for services: number · title · excerpt · arrow (used instead of cards). */
+export function ServiceRow({ service, ctx, index, category }: { service: Service; ctx: SiteContext; index: number; category?: string }) {
+  const { locale, defaultLocale, dir } = ctx;
+  const Out = dir === "rtl" ? ArrowLeft : ArrowRight;
+  return (
+    <Link href={`/${locale}/services/${service.slug}`} className="index-row group grid grid-cols-[auto_1fr_auto] items-center gap-x-4 gap-y-1 px-1 py-6 sm:gap-x-8 sm:px-4 lg:grid-cols-[4rem_minmax(0,1.1fr)_minmax(0,1fr)_auto] lg:py-8">
+      <span className="num self-start pt-1.5 text-sm text-muted lg:self-center lg:pt-0">{String(index + 1).padStart(2, "0")}</span>
+      <span className="min-w-0">
+        {category && <span className="kicker mb-1 block">{category}</span>}
+        <span className="block text-xl font-bold leading-snug transition-colors group-hover:text-primary sm:text-2xl lg:text-[1.75rem]">{pick(service.title, locale, defaultLocale)}</span>
+      </span>
+      <span className="index-arrow row-span-2 grid h-11 w-11 place-items-center self-center rounded-full border border-line lg:order-last lg:row-span-1">
+        <Out className="h-4 w-4" aria-hidden />
+      </span>
+      <span className="col-start-2 text-sm leading-relaxed text-muted sm:text-base lg:col-start-auto">{pick(service.excerpt, locale, defaultLocale)}</span>
+    </Link>
+  );
+}
+
+/** Wide editorial post card (featured article). */
+export function PostFeature({ post, ctx }: { post: BlogPost; ctx: SiteContext }) {
+  const { locale, defaultLocale, dir } = ctx;
+  const title = pick(post.title, locale, defaultLocale);
+  return (
+    <Link href={`/${locale}/blog/${post.slug}`} className="group grid grid-cols-1 items-center gap-6 md:grid-cols-2 lg:gap-12">
+      <div className="img-zoom relative aspect-[16/10] overflow-hidden rounded-brand-lg bg-subtle">
+        <SmartImage src={post.cover_url} alt={title} className="object-cover" sizes="(min-width:768px) 50vw, 100vw" />
+      </div>
+      <div>
+        <div className="flex flex-wrap items-center gap-2 text-sm text-muted">
+          {post.category && <span className="font-semibold text-primary">{pick(post.category.name, locale, defaultLocale)}</span>}
+          {post.category && <span className="rhombus scale-75" aria-hidden />}
+          <time dateTime={post.published_at ?? undefined}>{formatDate(post.published_at, locale)}</time>
+        </div>
+        <h3 className="mt-3 text-2xl font-bold leading-snug transition-colors group-hover:text-primary lg:text-4xl">{title}</h3>
+        <p className="mt-4 line-clamp-3 text-lg leading-relaxed text-muted">{pick(post.excerpt, locale, defaultLocale)}</p>
+        <span className="mt-6 inline-flex items-center gap-2 font-semibold text-primary">{ctx.t("common.read_more")} <Arrow dir={dir} /></span>
+      </div>
+    </Link>
+  );
+}

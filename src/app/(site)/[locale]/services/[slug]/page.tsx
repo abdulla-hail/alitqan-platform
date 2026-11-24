@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Plus } from "lucide-react";
-import { Arrow, ServiceCard } from "@/components/site/cards";
+import { Arrow, ServiceRow } from "@/components/site/cards";
 import { Icon } from "@/components/ui/Icon";
 import { Markdown } from "@/components/ui/Markdown";
 import { SmartImage } from "@/components/ui/SmartImage";
@@ -144,9 +144,7 @@ export default async function ServiceDetail({ params }: SlugParams) {
           {related.length > 0 && (
             <div className="mt-20">
               <h2 className="h-section mb-10">{t("services.related")}</h2>
-              <div className="grid grid-cols-1 gap-5 md:grid-cols-3">
-                {related.map((s) => <ServiceCard key={s.id} service={s} ctx={ctx} />)}
-              </div>
+              <div>{related.map((s, i) => <ServiceRow key={s.id} service={s} ctx={ctx} index={i} />)}</div>
             </div>
           )}
         </div>

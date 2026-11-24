@@ -77,3 +77,14 @@ describe("CMS input sanitising", () => {
     for (const name of ICON_CHOICES) expect(ICONS[name], name).toBeDefined();
   });
 });
+
+import { normalizeSiteUrl } from "./env";
+describe("site URL normalisation (production env had '1. https://…')", () => {
+  it("extracts a clean origin", () => {
+    expect(normalizeSiteUrl("1. https://alitqan-platform.vercel.app")).toBe("https://alitqan-platform.vercel.app");
+    expect(normalizeSiteUrl("https://alitqan.com/")).toBe("https://alitqan.com");
+    expect(normalizeSiteUrl("alitqan.com")).toBe("https://alitqan.com");
+    expect(normalizeSiteUrl("not a url")).toBeNull();
+    expect(normalizeSiteUrl(undefined)).toBeNull();
+  });
+});
