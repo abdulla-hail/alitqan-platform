@@ -107,7 +107,7 @@ export function ServicesExplorer({ services, dir, labels }: { services: Explorer
             ) : (
               <>
                 <div className="bg-measure absolute inset-0 opacity-30" aria-hidden />
-                <span className="relative grid h-28 w-28 place-items-center rounded-[2rem] bg-white text-[color:var(--c-primary)] shadow-2xl animate-float"><SI className="h-12 w-12" aria-hidden /></span>
+                <span className="relative grid h-28 w-28 place-items-center rounded-4xl bg-white text-[color:var(--c-primary)] shadow-2xl animate-float"><SI className="h-12 w-12" aria-hidden /></span>
                 <span className="absolute bottom-6 start-6 h-4 w-4 rotate-45 bg-[color:var(--c-accent)] animate-drift" aria-hidden />
                 <span className="absolute end-8 top-8 h-3 w-3 rotate-45 bg-white/70 animate-drift [animation-delay:-3s]" aria-hidden />
               </>

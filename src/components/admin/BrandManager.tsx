@@ -7,6 +7,7 @@ import { contrastRatio } from "@/lib/brand/theme";
 import type { BrandSettings, Palette } from "@/types/content";
 import { FieldEditor } from "./FieldEditor";
 import { LogoIdentityPanel } from "./LogoIdentityPanel";
+import { RadiusControl } from "./RadiusControl";
 import { PageTitle, SubmitButton, Tabs, useAdmin, useResult } from "./ui";
 
 const KEYS: (keyof Palette)[] = ["primary", "secondary", "accent", "background", "surface", "foreground", "muted", "border"];
@@ -63,7 +64,7 @@ export function BrandManager({ brand }: { brand: BrandSettings }) {
             <label key={k} className="block">
               <span className="label capitalize">{k}</span>
               <span className="flex items-center gap-2">
-                <input type="color" value={pal[k]} onChange={(e) => set("colors", { ...b.colors, [mode]: { ...pal, [k]: e.target.value } })} className="h-10 w-12 flex-none cursor-pointer rounded border border-line bg-transparent" />
+                <input type="color" value={pal[k]} onChange={(e) => set("colors", { ...b.colors, [mode]: { ...pal, [k]: e.target.value } })} className="h-10 w-12 flex-none cursor-pointer rounded-sm border border-line bg-transparent" />
                 <input value={pal[k]} onChange={(e) => set("colors", { ...b.colors, [mode]: { ...pal, [k]: e.target.value } })} className="input min-h-0 py-2 font-mono text-xs" dir="ltr" />
               </span>
             </label>
@@ -86,6 +87,8 @@ export function BrandManager({ brand }: { brand: BrandSettings }) {
         </div>
       </section>
 
+      <RadiusControl value={b.radius} onChange={(v) => set("radius", v)} ar={ar} />
+
       <section className="card space-y-5 p-6">
         <h2 className="text-lg font-bold">{ar ? "إعدادات الثيم" : "Theme settings"}</h2>
         <p className="text-sm text-muted">
@@ -93,12 +96,6 @@ export function BrandManager({ brand }: { brand: BrandSettings }) {
           <a href="/admin/typography" className="font-semibold text-primary underline">{ar ? "إدارة الخطوط" : "Typography settings"}</a>.
         </p>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-          <div>
-            <label className="label">{ar ? "انحناء الحواف" : "Corner radius"}</label>
-            <select className="input" value={b.radius} onChange={(e) => set("radius", e.target.value)}>
-              {["0px", "6px", "10px", "14px", "18px", "24px"].map((r) => <option key={r} value={r}>{r}</option>)}
-            </select>
-          </div>
           <div>
             <label className="label">{ar ? "نمط الخلفية" : "Background pattern"}</label>
             <select className="input" value={b.backgrounds?.pattern ?? "measure"} onChange={(e) => set("backgrounds", { ...b.backgrounds, pattern: e.target.value })}>

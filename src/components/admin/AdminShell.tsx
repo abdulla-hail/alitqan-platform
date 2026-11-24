@@ -56,7 +56,7 @@ function Sidebar({ mini, groups, activeHref, can }: { mini: boolean; groups: { t
                         <i.icon className={`h-[18px] w-[18px] flex-none transition-transform duration-300 ${on ? "" : "group-hover:scale-110"}`} />
                         {!mini && <span className="flex-1 truncate">{i.label}</span>}
                         {!!i.badge && (
-                          <span className={`rounded-full bg-accent px-1.5 text-[11px] font-bold text-on-accent ${mini ? "absolute -top-0.5 end-0.5" : ""}`}>{i.badge}</span>
+                          <span className={`rounded-pill bg-accent px-1.5 text-[11px] font-bold text-on-accent ${mini ? "absolute -top-0.5 end-0.5" : ""}`}>{i.badge}</span>
                         )}
                       </Link>
                     </li>

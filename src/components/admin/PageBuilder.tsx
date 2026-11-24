@@ -22,7 +22,7 @@ function Row({ s, onEdit, onToggle, onDelete, onDuplicate }: { s: Section; onEdi
   const preview = L(s.content?.title, locale) || L(s.content?.eyebrow, locale) || s.label || "";
   return (
     <li ref={setNodeRef} style={{ transform: CSS.Transform.toString(transform), transition, position: "relative", zIndex: isDragging ? 10 : undefined }} className={`card flex items-center gap-3 p-3 ${isDragging ? "shadow-xl ring-2 ring-primary" : ""} ${s.is_visible ? "" : "opacity-60"}`}>
-      <button type="button" className="cursor-grab touch-none rounded p-1 text-muted hover:bg-subtle" {...attributes} {...listeners} aria-label={d.drag_to_reorder}><GripVertical className="h-4 w-4" /></button>
+      <button type="button" className="cursor-grab touch-none rounded-sm p-1 text-muted hover:bg-subtle" {...attributes} {...listeners} aria-label={d.drag_to_reorder}><GripVertical className="h-4 w-4" /></button>
       <span className="icon-tile h-10 w-10">{I ? <I className="h-4 w-4" /> : null}</span>
       <button type="button" onClick={onEdit} className="min-w-0 flex-1 text-start">
         <p className="text-xs font-semibold text-primary">{def?.label[locale] ?? s.type}</p>

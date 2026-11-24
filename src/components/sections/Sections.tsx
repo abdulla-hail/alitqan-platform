@@ -54,12 +54,12 @@ function CtaButtons({ ctx, primary, secondary, center = false }: { ctx: SiteCont
   return (
     <div className={`flex flex-wrap gap-3 ${center ? "justify-center" : ""}`}>
       {primary?.[0] && primary[1] && (
-        <Link href={primary[1]} className="btn btn-primary group min-h-12 rounded-full px-6">
+        <Link href={primary[1]} className="btn btn-primary group min-h-12 rounded-pill px-6">
           <Rocket className="h-4 w-4" aria-hidden />{primary[0]}
         </Link>
       )}
       {secondary?.[0] && secondary[1] && (
-        <Link href={secondary[1]} className="btn btn-outline group min-h-12 rounded-full px-6">
+        <Link href={secondary[1]} className="btn btn-outline group min-h-12 rounded-pill px-6">
           {secondary[0]} <Arrow dir={ctx.dir} />
         </Link>
       )}
@@ -89,7 +89,7 @@ async function Hero({ section, ctx }: { section: PageSection; ctx: SiteContext }
           {words.length > 0 && (
             <p className="hero-in mt-6 flex flex-wrap items-center justify-center gap-3 text-lg font-semibold sm:text-xl" style={{ ["--i" as string]: 2 }}>
               <span className="text-muted">{ctx.t("hero.specialized")}</span>
-              <Rotator words={words} className="inline-flex rounded-full bg-primary px-4 py-1.5 text-on-primary shadow-[0_10px_30px_-12px_var(--color-primary)]" />
+              <Rotator words={words} className="inline-flex rounded-pill bg-primary px-4 py-1.5 text-on-primary shadow-[0_10px_30px_-12px_var(--color-primary)]" />
             </p>
           )}
           {L("subtitle") && <p className="lead hero-in mt-6" style={{ ["--i" as string]: 3 }}>{L("subtitle")}</p>}
@@ -99,7 +99,7 @@ async function Hero({ section, ctx }: { section: PageSection; ctx: SiteContext }
           {list("highlights").length > 0 && (
             <ul className="hero-in mt-8 flex flex-wrap justify-center gap-2" style={{ ["--i" as string]: 5 }}>
               {list("highlights").map((h, i) => (
-                <li key={i} className="inline-flex items-center gap-2 rounded-full border border-line bg-surface px-3.5 py-1.5 text-sm"><span className="rhombus scale-75" aria-hidden />{li(h, "text")}</li>
+                <li key={i} className="inline-flex items-center gap-2 rounded-pill border border-line bg-surface px-3.5 py-1.5 text-sm"><span className="rhombus scale-75" aria-hidden />{li(h, "text")}</li>
               ))}
             </ul>
           )}
@@ -187,7 +187,7 @@ function About({ section, ctx }: { section: PageSection; ctx: SiteContext }) {
             </ul>
           )}
           {L("link_label") && href("link_href") && (
-            <Reveal i={4}><Link href={href("link_href")} className="btn btn-primary group mt-8 rounded-full px-6">{L("link_label")} <Arrow dir={ctx.dir} /></Link></Reveal>
+            <Reveal i={4}><Link href={href("link_href")} className="btn btn-primary group mt-8 rounded-pill px-6">{L("link_label")} <Arrow dir={ctx.dir} /></Link></Reveal>
           )}
         </div>
         <Reveal variant="image" className="relative aspect-[5/4] overflow-hidden rounded-[calc(var(--radius)*2)] bg-subtle">
@@ -230,7 +230,7 @@ async function Services({ section, ctx }: { section: PageSection; ctx: SiteConte
         />
       </Reveal>
       {L("link_label") && href("link_href") && (
-        <div className="mt-8 flex justify-center"><Link href={href("link_href")} className="btn btn-outline group rounded-full px-6">{L("link_label")} <Arrow dir={ctx.dir} /></Link></div>
+        <div className="mt-8 flex justify-center"><Link href={href("link_href")} className="btn btn-outline group rounded-pill px-6">{L("link_label")} <Arrow dir={ctx.dir} /></Link></div>
       )}
     </Shell>
   );
@@ -296,7 +296,7 @@ async function Stats({ section, ctx }: { section: PageSection; ctx: SiteContext 
               <p className="flex items-center gap-1 text-sm text-muted"><Star className="h-4 w-4 fill-current text-accent" aria-hidden /><span className="num font-semibold text-fg">{avg.toFixed(1)}</span> / 5 · {testimonials.length}</p>
             </div>
           </div>
-          <Link href={`/${ctx.locale}/contact`} className="btn btn-primary group rounded-full px-6">{ctx.t("common.contact_us")} <Arrow dir={ctx.dir} /></Link>
+          <Link href={`/${ctx.locale}/contact`} className="btn btn-primary group rounded-pill px-6">{ctx.t("common.contact_us")} <Arrow dir={ctx.dir} /></Link>
         </Reveal>
       )}
     </Shell>
@@ -308,7 +308,7 @@ async function Stats({ section, ctx }: { section: PageSection; ctx: SiteContext 
 async function Projects({ section, ctx }: { section: PageSection; ctx: SiteContext }) {
   const { c, s, L, href } = useSection(section, ctx);
   const L2 = (v: unknown) => pick(v as Localized, ctx.locale, ctx.defaultLocale);
-  const action = L("link_label") && href("link_href") ? <Link href={href("link_href")} className="btn btn-outline group rounded-full px-6">{L("link_label")} <Arrow dir={ctx.dir} /></Link> : null;
+  const action = L("link_label") && href("link_href") ? <Link href={href("link_href")} className="btn btn-outline group rounded-pill px-6">{L("link_label")} <Arrow dir={ctx.dir} /></Link> : null;
   const categories = await getProjectCategories();
 
   if (s.layout === "slider") {
@@ -517,7 +517,7 @@ async function Posts({ section, ctx }: { section: PageSection; ctx: SiteContext 
       <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
         {items.map((p, i) => <Reveal key={p.id} i={i} variant="up"><PostCard post={p} ctx={ctx} /></Reveal>)}
       </div>
-      {L("link_label") && href("link_href") && <div className="mt-10 flex justify-center"><Link href={href("link_href")} className="btn btn-outline group rounded-full px-6">{L("link_label")} <Arrow dir={ctx.dir} /></Link></div>}
+      {L("link_label") && href("link_href") && <div className="mt-10 flex justify-center"><Link href={href("link_href")} className="btn btn-outline group rounded-pill px-6">{L("link_label")} <Arrow dir={ctx.dir} /></Link></div>}
     </Shell>
   );
 }
@@ -550,7 +550,7 @@ function ImageText({ section, ctx }: { section: PageSection; ctx: SiteContext })
           </Reveal>
           <Reveal i={1}><Markdown className="prose-brand mt-6 text-muted">{L("body")}</Markdown></Reveal>
           {L("link_label") && href("link_href") && (
-            <Reveal i={2}><Link href={href("link_href")} className="btn btn-primary group mt-8 rounded-full px-6">{L("link_label")} <Arrow dir={ctx.dir} /></Link></Reveal>
+            <Reveal i={2}><Link href={href("link_href")} className="btn btn-primary group mt-8 rounded-pill px-6">{L("link_label")} <Arrow dir={ctx.dir} /></Link></Reveal>
           )}
         </div>
       </div>
@@ -575,8 +575,8 @@ function Cta({ section, ctx }: { section: PageSection; ctx: SiteContext }) {
           <h2 className="h-display mx-auto max-w-3xl">{L("title")}</h2>
           {L("subtitle") && <p className="mx-auto mt-5 max-w-2xl text-lg text-white/80">{L("subtitle")}</p>}
           <div className="mt-9 flex flex-wrap justify-center gap-3">
-            {L("primary_label") && href("primary_href") && <Link href={href("primary_href")} className="btn btn-accent group min-h-12 rounded-full px-6"><Rocket className="h-4 w-4" />{L("primary_label")}</Link>}
-            {L("secondary_label") && href("secondary_href") && <Link href={href("secondary_href")} className="btn min-h-12 rounded-full border-white/30 px-6 text-white hover:bg-white/10">{L("secondary_label")}</Link>}
+            {L("primary_label") && href("primary_href") && <Link href={href("primary_href")} className="btn btn-accent group min-h-12 rounded-pill px-6"><Rocket className="h-4 w-4" />{L("primary_label")}</Link>}
+            {L("secondary_label") && href("secondary_href") && <Link href={href("secondary_href")} className="btn min-h-12 rounded-pill border-white/30 px-6 text-white hover:bg-white/10">{L("secondary_label")}</Link>}
           </div>
           {(contact.email || wa) && (
             <div className="mt-8 flex flex-wrap justify-center gap-x-6 gap-y-2 text-sm text-white/80">

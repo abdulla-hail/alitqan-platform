@@ -16,7 +16,7 @@ function SortableRow({ id, disabled, children }: { id: string; disabled: boolean
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id, disabled });
   const style = { transform: CSS.Transform.toString(transform), transition, zIndex: isDragging ? 10 : undefined, position: "relative" as const };
   const handle = disabled ? null : (
-    <button type="button" className="cursor-grab touch-none rounded p-1 text-muted hover:bg-subtle active:cursor-grabbing" {...attributes} {...listeners} aria-label="Drag">
+    <button type="button" className="cursor-grab touch-none rounded-sm p-1 text-muted hover:bg-subtle active:cursor-grabbing" {...attributes} {...listeners} aria-label="Drag">
       <GripVertical className="h-4 w-4" />
     </button>
   );
@@ -127,7 +127,7 @@ export function ResourceList({ resourceKey, rows: initial, extraActions }: { res
                           <p className="truncate text-xs text-muted">
                             {def.subtitleField ? L(r[def.subtitleField], locale) : ""}
                             {r.slug ? <span dir="ltr" className="ms-2 font-mono">/{String(r.slug)}</span> : null}
-                            {r.is_demo ? <span className="ms-2 rounded bg-accent-soft px-1.5 text-[10px] font-bold text-fg">DEMO</span> : null}
+                            {r.is_demo ? <span className="ms-2 rounded-sm bg-accent-soft px-1.5 text-[10px] font-bold text-fg">DEMO</span> : null}
                           </p>
                         </Link>
                         <div className="flex flex-none items-center gap-1">

@@ -85,7 +85,7 @@ export function MediaLibrary({ initial }: { initial: MediaRow[] }) {
           <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
             <div className="grid place-items-center rounded-lg bg-subtle p-3">
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              {sel.mime_type.startsWith("image/") ? <img src={sel.url} alt="" className="max-h-96 rounded object-contain" /> : <a href={sel.url} target="_blank" rel="noreferrer" className="btn btn-outline"><FileText className="h-5 w-5" />{d.open}</a>}
+              {sel.mime_type.startsWith("image/") ? <img src={sel.url} alt="" className="max-h-96 rounded-sm object-contain" /> : <a href={sel.url} target="_blank" rel="noreferrer" className="btn btn-outline"><FileText className="h-5 w-5" />{d.open}</a>}
             </div>
             <div className="space-y-4 text-sm">
               <dl className="grid grid-cols-2 gap-2">

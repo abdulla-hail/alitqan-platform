@@ -62,8 +62,8 @@ export default async function ServiceDetail({ params }: SlugParams) {
               <h1 className="h-display hero-in mt-5" style={{ ["--i" as string]: 1 }}>{L(service.title)}</h1>
               <p className="lead hero-in mt-5" style={{ ["--i" as string]: 2 }}>{L(service.excerpt)}</p>
               <div className="hero-in mt-8 flex flex-wrap gap-3" style={{ ["--i" as string]: 3 }}>
-                <Link href={requestHref} className="btn btn-primary min-h-12 rounded-full px-6"><Rocket className="h-4 w-4" aria-hidden />{t("common.request_service")}</Link>
-                {wa && <a href={`https://wa.me/${wa}`} target="_blank" rel="noopener noreferrer" className="btn btn-outline min-h-12 rounded-full px-6"><MessageCircle className="h-4 w-4" aria-hidden />{t("contact.whatsapp")}</a>}
+                <Link href={requestHref} className="btn btn-primary min-h-12 rounded-pill px-6"><Rocket className="h-4 w-4" aria-hidden />{t("common.request_service")}</Link>
+                {wa && <a href={`https://wa.me/${wa}`} target="_blank" rel="noopener noreferrer" className="btn btn-outline min-h-12 rounded-pill px-6"><MessageCircle className="h-4 w-4" aria-hidden />{t("contact.whatsapp")}</a>}
               </div>
             </div>
             <div className="hero-in lg:col-span-5" style={{ ["--i" as string]: 2 }}>
@@ -71,7 +71,7 @@ export default async function ServiceDetail({ params }: SlugParams) {
                 {service.image_url ? <SmartImage src={service.image_url} alt={L(service.title)} priority className="object-cover" /> : (
                   <div className="panel-brand absolute inset-0 grid place-items-center">
                     <div className="bg-measure absolute inset-0 opacity-25" aria-hidden />
-                    <span className="relative grid h-28 w-28 place-items-center rounded-[2rem] bg-white text-primary shadow-2xl animate-float"><Icon name={service.icon} className="h-12 w-12" /></span>
+                    <span className="relative grid h-28 w-28 place-items-center rounded-4xl bg-white text-primary shadow-2xl animate-float"><Icon name={service.icon} className="h-12 w-12" /></span>
                   </div>
                 )}
               </div>
@@ -91,7 +91,7 @@ export default async function ServiceDetail({ params }: SlugParams) {
                 <ul className="mt-4 flex flex-wrap gap-2" dir="ltr">
                   {service.technologies.map((x) => <li key={x} className="ink rounded-xl px-3 py-1.5 text-sm font-semibold">{x}</li>)}
                 </ul>
-                <Link href={requestHref} className="btn btn-primary group mt-6 w-full rounded-full">{t("common.request_service")} <Arrow dir={dir} /></Link>
+                <Link href={requestHref} className="btn btn-primary group mt-6 w-full rounded-pill">{t("common.request_service")} <Arrow dir={dir} /></Link>
               </div>
             </aside>
           )}
@@ -170,7 +170,7 @@ export default async function ServiceDetail({ params }: SlugParams) {
             <div className="bg-measure absolute inset-0 opacity-20" aria-hidden />
             <h2 className="relative text-2xl font-bold sm:text-3xl">{t("services.cta_title")}</h2>
             <p className="relative mx-auto mt-3 max-w-xl text-white/80">{t("services.cta_text")}</p>
-            <Link href={requestHref} className="btn btn-accent relative mt-8 min-h-12 rounded-full px-6"><Rocket className="h-4 w-4" aria-hidden />{t("common.request_service")}</Link>
+            <Link href={requestHref} className="btn btn-accent relative mt-8 min-h-12 rounded-pill px-6"><Rocket className="h-4 w-4" aria-hidden />{t("common.request_service")}</Link>
           </Reveal>
         </div>
       </section>

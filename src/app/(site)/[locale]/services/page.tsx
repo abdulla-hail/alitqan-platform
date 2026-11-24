@@ -31,7 +31,7 @@ export default async function ServicesPage({ params }: LocaleParams) {
           <ul className="container-x scroll-x flex justify-start gap-2 md:justify-center">
             {grouped.map(({ category }) => (
               <li key={category.id}>
-                <Link href={`#${category.slug}`} className="inline-flex items-center gap-2 whitespace-nowrap rounded-full border border-line bg-surface px-4 py-2 text-sm font-semibold transition-colors hover:border-primary hover:text-primary">
+                <Link href={`#${category.slug}`} className="inline-flex items-center gap-2 whitespace-nowrap rounded-pill border border-line bg-surface px-4 py-2 text-sm font-semibold transition-colors hover:border-primary hover:text-primary">
                   <Icon name={category.icon} className="h-4 w-4 text-primary" />{L(category.name)}
                 </Link>
               </li>

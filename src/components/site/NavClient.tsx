@@ -193,7 +193,7 @@ export function NavLinks({ items, label, mega, dir }: { items: NavLinkItem[]; la
                     )}
                   </Link>
                   {hasDrop && (
-                    <button type="button" className="sr-only focus:not-sr-only focus:rounded-full focus:px-2" aria-expanded={open === key} aria-label={it.label} onClick={() => (open === key ? setOpen(null) : openSoon(key))}>▾</button>
+                    <button type="button" className="sr-only focus:not-sr-only focus:rounded-pill focus:px-2" aria-expanded={open === key} aria-label={it.label} onClick={() => (open === key ? setOpen(null) : openSoon(key))}>▾</button>
                   )}
                 </span>
                 <AnimatePresence>

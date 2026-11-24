@@ -62,7 +62,7 @@ export default async function RequestsPage({ searchParams }: { searchParams: SP 
                       <p className="truncate font-semibold">{r.name}</p>
                       <p className="truncate text-xs text-muted" dir="ltr">{r.email}</p>
                     </div>
-                    <span className={`flex-none rounded-full px-2.5 py-0.5 text-xs font-semibold ${st?.tone}`}>{st?.[locale] ?? r.status}</span>
+                    <span className={`flex-none rounded-pill px-2.5 py-0.5 text-xs font-semibold ${st?.tone}`}>{st?.[locale] ?? r.status}</span>
                   </div>
                   <div className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted">
                     <span className="font-mono text-primary" dir="ltr">{r.reference}</span>
@@ -84,10 +84,10 @@ export default async function RequestsPage({ searchParams }: { searchParams: SP 
                 const files = (r.request_attachments as unknown as { count: number }[])?.[0]?.count ?? 0;
                 return (
                   <tr key={r.id} className={`border-b border-line/60 transition-colors hover:bg-subtle ${r.status === "new" ? "bg-accent-soft/40" : ""}`}>
-                    <td className="p-3"><Link href={`/admin/requests/${r.id}`} className="font-mono text-xs text-primary" dir="ltr">{r.reference}</Link>{r.kind === "quote" && <span className="ms-2 rounded bg-secondary/15 px-1.5 text-[10px] font-bold text-secondary">QUOTE</span>}</td>
+                    <td className="p-3"><Link href={`/admin/requests/${r.id}`} className="font-mono text-xs text-primary" dir="ltr">{r.reference}</Link>{r.kind === "quote" && <span className="ms-2 rounded-sm bg-secondary/15 px-1.5 text-[10px] font-bold text-secondary">QUOTE</span>}</td>
                     <td className="p-3"><Link href={`/admin/requests/${r.id}`} className="font-semibold hover:text-primary">{r.name}</Link><p className="text-xs text-muted" dir="ltr">{r.email}{r.company ? ` · ${r.company}` : ""}</p></td>
                     <td className="p-3">{r.service_label || "—"}{files > 0 && <Paperclip className="ms-1 inline h-3.5 w-3.5 text-muted" />}</td>
-                    <td className="p-3"><span className={`rounded-full px-2.5 py-0.5 text-xs font-semibold ${st?.tone}`}>{st?.[locale] ?? r.status}</span>{r.priority === "high" && <span className="ms-1 text-xs font-bold text-danger">!</span>}</td>
+                    <td className="p-3"><span className={`rounded-pill px-2.5 py-0.5 text-xs font-semibold ${st?.tone}`}>{st?.[locale] ?? r.status}</span>{r.priority === "high" && <span className="ms-1 text-xs font-bold text-danger">!</span>}</td>
                     <td className="p-3 text-xs">{r.followup_on ? fmt(r.followup_on) : "—"}</td>
                     <td className="p-3 text-xs text-muted">{fmt(r.created_at)}</td>
                   </tr>

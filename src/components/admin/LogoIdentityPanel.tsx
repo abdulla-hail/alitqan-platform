@@ -65,7 +65,7 @@ export function LogoIdentityPanel({ b, set, ar }: { b: BrandSettings; set: <K ex
         </div>
         <div className="grid min-h-40 place-items-center rounded-2xl border border-line bg-subtle p-6">
           <div className="flex items-end gap-4">
-            <span className="grid h-20 w-20 place-items-center rounded-[1.4rem] bg-white shadow-md"><BrandMark square className="h-16 w-16" colors={colors} /></span>
+            <span className="grid h-20 w-20 place-items-center rounded-[calc(var(--radius)*1.6)] bg-white shadow-md"><BrandMark square className="h-16 w-16" colors={colors} /></span>
             <span className="grid h-11 w-11 place-items-center rounded-xl bg-white shadow"><BrandMark square className="h-9 w-9" colors={colors} /></span>
             <BrandMark square className="h-6 w-6" colors={colors} />
           </div>
@@ -86,7 +86,7 @@ export function LogoIdentityPanel({ b, set, ar }: { b: BrandSettings; set: <K ex
             <label key={k} className="block">
               <span className="label">{ar ? arL : enL}</span>
               <span className="flex items-center gap-2">
-                <input type="color" value={colors[k]} onChange={(e) => setColor(k, e.target.value.toUpperCase())} className="h-10 w-12 flex-none cursor-pointer rounded border border-line bg-transparent" aria-label={ar ? arL : enL} />
+                <input type="color" value={colors[k]} onChange={(e) => setColor(k, e.target.value.toUpperCase())} className="h-10 w-12 flex-none cursor-pointer rounded-sm border border-line bg-transparent" aria-label={ar ? arL : enL} />
                 <input value={sys.colors?.[k] ?? ""} placeholder={k === "mono" ? MARK_DEFAULT_MONO : MARK_DEFAULT_COLORS[k]} onChange={(e) => setColor(k, e.target.value.trim())} className="input min-h-0 py-2 font-mono text-xs" dir="ltr" />
               </span>
             </label>
@@ -151,7 +151,7 @@ export function LogoIdentityPanel({ b, set, ar }: { b: BrandSettings; set: <K ex
         <Download className="h-4 w-4" />
         {ar ? "حزمة الشعار الرسمية:" : "Official logo package:"}
         {PACKAGE.map((f) => (
-          <a key={f} href={`/brand/${f}`} download className="rounded-full border border-line px-2.5 py-0.5 font-mono text-xs text-primary hover:border-primary" dir="ltr">{f}</a>
+          <a key={f} href={`/brand/${f}`} download className="rounded-pill border border-line px-2.5 py-0.5 font-mono text-xs text-primary hover:border-primary" dir="ltr">{f}</a>
         ))}
       </div>
     </section>

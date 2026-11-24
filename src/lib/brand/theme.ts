@@ -1,9 +1,9 @@
 import type { BrandSettings, Palette } from "@/types/content";
 import { MARK_DEFAULT_COLORS, MARK_DEFAULT_MONO } from "./mark";
+import { RADIUS_DEFAULT, radiusValue } from "./radius";
 import { customFontFaces, FONT_CATALOG, googleFontsHref as gfHref, resolveTypography, safeFamily, type CustomFont } from "./fonts";
 
 const HEX = /^#(?:[0-9a-fA-F]{3}|[0-9a-fA-F]{6}|[0-9a-fA-F]{8})$/;
-const RADIUS = /^\d{1,2}(\.\d+)?(px|rem)$/;
 
 export const FALLBACK_PALETTES: { light: Palette; dark: Palette } = {
   light: { primary: "#0756D8", secondary: "#022A7C", accent: "#00B4EE", background: "#F7F9FD", surface: "#FFFFFF", foreground: "#0A1433", muted: "#56627A", border: "#E0E6F1" },
@@ -111,12 +111,12 @@ export function logoVars(brand: BrandSettings | null) {
 
 export function brandCss(brand: BrandSettings | null, dir: "rtl" | "ltr", opts: { scope?: "site" | "admin"; customFonts?: CustomFont[] } = {}) {
   const fonts = fontStacks(brand, dir, opts.scope);
-  const radius = brand && RADIUS.test(brand.radius) ? brand.radius : "14px";
+  const radius = radiusValue(brand?.radius ?? RADIUS_DEFAULT); // → --global-border-radius
   const light = paletteVars(brand?.colors?.light, FALLBACK_PALETTES.light);
   const dark = paletteVars(brand?.colors?.dark, FALLBACK_PALETTES.dark);
   const pattern = brand?.backgrounds?.pattern === "none" ? ".bg-measure{background-image:none!important}" : "";
   const faces = customFontFaces(opts.customFonts ?? [], fonts.families);
   const inkPrimary = safeColor(brand?.colors?.dark?.primary, FALLBACK_PALETTES.dark.primary);
   const ink = `--c-ink-primary:${inkPrimary};--c-ink-on-primary:${onColor(inkPrimary)}`;
-  return `${faces}:root{${light};${ink};${logoVars(brand)};--radius:${radius};--f-display:${fonts.display};--f-body:${fonts.body}}[data-theme="dark"]{${dark}}${pattern}`;
+  return `${faces}:root{${light};${ink};${logoVars(brand)};--global-border-radius:${radius};--f-display:${fonts.display};--f-body:${fonts.body}}[data-theme="dark"]{${dark}}${pattern}`;
 }

@@ -50,7 +50,7 @@ export function InboxDetail({ kind, item, notes: initialNotes, attachments, staf
               <h1 className="text-2xl font-bold">{item.name}</h1>
               <p className="text-sm text-muted">{fmt(item.created_at)}</p>
             </div>
-            <span className={`rounded-full px-3 py-1 text-sm font-semibold ${statuses[item.status]?.tone}`}>{statuses[item.status]?.[locale]}</span>
+            <span className={`rounded-pill px-3 py-1 text-sm font-semibold ${statuses[item.status]?.tone}`}>{statuses[item.status]?.[locale]}</span>
           </div>
           <div className="mt-5 flex flex-wrap gap-2">
             <a href={`mailto:${item.email}`} className="btn btn-outline btn-sm"><Mail className="h-4 w-4" /><span dir="ltr">{item.email}</span></a>

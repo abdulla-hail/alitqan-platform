@@ -25,7 +25,10 @@
   --c-danger: #b42318;
   --c-success: #067647;
   --c-warning: #b54708;
-  --radius: 14px;
+  /* Global Border Radius — the ONE corner-rounding setting (CMS → Brand identity).
+     Every rounded element derives from it; brandCss() overrides it from brand_settings.radius. */
+  --global-border-radius: 14px;
+  --radius: var(--global-border-radius);
   --f-display: system-ui, sans-serif;
   --f-body: system-ui, sans-serif;
   color-scheme: light;
@@ -67,9 +70,23 @@
   --color-accent-soft: color-mix(in oklab, var(--c-accent) 16%, var(--c-background));
   --font-display: var(--f-display);
   --font-sans: var(--f-body);
-  --radius-brand: var(--radius);
-  --radius-brand-sm: calc(var(--radius) * 0.6);
-  --radius-brand-lg: calc(var(--radius) * 1.6);
+  --radius-brand: var(--global-border-radius);
+  --radius-brand-sm: calc(var(--global-border-radius) * 0.6);
+  --radius-brand-lg: calc(var(--global-border-radius) * 1.6);
+  /* Tailwind's rounded-* scale, rebased on the global radius. Ratios reproduce Tailwind's
+     defaults exactly at 14px (xs 2 · sm 4 · md 6 · lg 8 · xl 12 · 2xl 16 · 3xl 24 · 4xl 32),
+     scale proportionally with the setting, and all reach 0 for square corners. */
+  --radius-xs: calc(var(--global-border-radius) * 2 / 14);
+  --radius-sm: calc(var(--global-border-radius) * 4 / 14);
+  --radius-md: calc(var(--global-border-radius) * 6 / 14);
+  --radius-lg: calc(var(--global-border-radius) * 8 / 14);
+  --radius-xl: calc(var(--global-border-radius) * 12 / 14);
+  --radius-2xl: calc(var(--global-border-radius) * 16 / 14);
+  --radius-3xl: calc(var(--global-border-radius) * 24 / 14);
+  --radius-4xl: calc(var(--global-border-radius) * 32 / 14);
+  /* Pill shapes (buttons, badges, chips): fully round up to 70px tall at 14px, square at 0.
+     True circles (avatars, icon discs, dots) keep rounded-full and are not affected. */
+  --radius-pill: calc(var(--global-border-radius) * 2.5);
   --animate-rise: rise 0.7s cubic-bezier(0.2, 0.7, 0.2, 1) both;
   --animate-float: float 7s ease-in-out infinite;
 }
@@ -96,7 +113,7 @@
   [dir="rtl"] h1, [dir="rtl"] h2, [dir="rtl"] h3 { letter-spacing: 0; }
   p { text-wrap: pretty; }
   ::selection { background: var(--color-accent); color: var(--color-on-accent); }
-  :focus-visible { outline: 2px solid var(--color-accent); outline-offset: 3px; border-radius: 4px; }
+  :focus-visible { outline: 2px solid var(--color-accent); outline-offset: 3px; border-radius: var(--radius-sm); }
   @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; scroll-behavior: auto !important; }
   }
@@ -160,7 +177,7 @@
   }
 
   .chip {
-    display: inline-flex; align-items: center; gap: 0.35rem; padding: 0.3rem 0.75rem; border-radius: 999px;
+    display: inline-flex; align-items: center; gap: 0.35rem; padding: 0.3rem 0.75rem; border-radius: var(--radius-pill);
     font-size: 0.8rem; font-weight: 500; border: 1px solid var(--color-line); background: var(--color-surface); color: var(--color-fg);
   }
   .chip-active { background: var(--color-fg); color: var(--color-bg); border-color: var(--color-fg); }
@@ -201,7 +218,7 @@
   .prose-brand ul li::before { content: ""; position: absolute; inset-inline-start: 0.2rem; top: 0.75em; width: 0.4rem; height: 0.4rem; background: var(--color-accent); transform: rotate(45deg); }
   .prose-brand ol { list-style: decimal; padding-inline-start: 1.4rem; }
   .prose-brand blockquote { border-inline-start: 3px solid var(--color-accent); padding-inline-start: 1rem; color: var(--color-muted); font-style: italic; }
-  .prose-brand code { background: var(--color-subtle); padding: 0.1em 0.35em; border-radius: 6px; font-size: 0.9em; }
+  .prose-brand code { background: var(--color-subtle); padding: 0.1em 0.35em; border-radius: var(--radius-md); font-size: 0.9em; }
   .prose-brand pre { background: var(--color-subtle); padding: 1rem; border-radius: var(--radius-brand-sm); overflow-x: auto; }
   .prose-brand img { border-radius: var(--radius-brand-sm); }
   .prose-brand table { width: 100%; border-collapse: collapse; }

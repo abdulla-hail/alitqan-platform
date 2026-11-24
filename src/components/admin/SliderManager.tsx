@@ -23,7 +23,7 @@ function Row({ p, onRemove, onTarget }: { p: SliderProject; onRemove: () => void
   return (
     <li ref={setNodeRef} style={{ transform: CSS.Transform.toString(transform), transition, position: "relative", zIndex: isDragging ? 10 : undefined }}
       className={`card flex flex-wrap items-center gap-3 p-3 sm:flex-nowrap ${isDragging ? "shadow-xl ring-2 ring-primary" : ""}`}>
-      <button type="button" className="cursor-grab touch-none rounded p-1 text-muted hover:bg-subtle active:cursor-grabbing" {...attributes} {...listeners} aria-label={d.drag_to_reorder}><GripVertical className="h-4 w-4" /></button>
+      <button type="button" className="cursor-grab touch-none rounded-sm p-1 text-muted hover:bg-subtle active:cursor-grabbing" {...attributes} {...listeners} aria-label={d.drag_to_reorder}><GripVertical className="h-4 w-4" /></button>
       <div className="h-14 w-20 flex-none overflow-hidden rounded-md bg-subtle">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         {img && <img src={img} alt="" className="h-full w-full object-cover" />}

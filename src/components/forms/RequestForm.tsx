@@ -91,7 +91,7 @@ export function RequestForm({
         <h2 className="mt-5 text-2xl font-bold">{t["form.success_title"]}</h2>
         <p className="mt-2 text-muted">{t["form.success_text"]}</p>
         {reference && (
-          <p className="mt-6 rounded-full bg-soft px-5 py-2 font-semibold">
+          <p className="mt-6 rounded-pill bg-soft px-5 py-2 font-semibold">
             {t["form.reference"]}: <span dir="ltr" className="font-mono">{reference}</span>
           </p>
         )}

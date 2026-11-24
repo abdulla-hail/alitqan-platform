@@ -36,7 +36,7 @@ export function ProjectsShowcase({ items, categories, dir, labels }: { items: Sh
         <div className="scroll-x mb-8 flex justify-start gap-2 md:justify-center" role="tablist" aria-label={labels.all}>
           {[{ id: "all", name: labels.all }, ...usedCats].map((c) => (
             <button key={c.id} type="button" role="tab" aria-selected={cat === c.id} onClick={() => { setCat(c.id); rail.current?.scrollTo({ left: 0 }); }}
-              className={`whitespace-nowrap rounded-full border px-4 py-2 text-sm font-semibold transition-all duration-300 ${cat === c.id ? "border-primary bg-primary text-on-primary shadow-[0_8px_20px_-10px_var(--color-primary)]" : "border-line bg-surface hover:border-primary hover:text-primary"}`}>
+              className={`whitespace-nowrap rounded-pill border px-4 py-2 text-sm font-semibold transition-all duration-300 ${cat === c.id ? "border-primary bg-primary text-on-primary shadow-[0_8px_20px_-10px_var(--color-primary)]" : "border-line bg-surface hover:border-primary hover:text-primary"}`}>
               {c.name}
             </button>
           ))}
@@ -54,7 +54,7 @@ export function ProjectsShowcase({ items, categories, dir, labels }: { items: Sh
                       <img src={p.image.src} srcSet={p.image.srcSet} sizes={p.image.sizes ?? "(min-width:1024px) 32vw, 80vw"} alt={p.alt} loading={i < 3 ? "eager" : "lazy"} decoding="async" className="absolute inset-0 h-full w-full object-cover" />
                     )}
                   </div>
-                  {p.category && <span className="absolute start-3 top-3 rounded-full bg-surface/90 px-3 py-1 text-xs font-semibold text-fg backdrop-blur">{p.category}</span>}
+                  {p.category && <span className="absolute start-3 top-3 rounded-pill bg-surface/90 px-3 py-1 text-xs font-semibold text-fg backdrop-blur">{p.category}</span>}
                 </div>
                 <div className="flex flex-1 flex-col p-5">
                   <h3 className="text-lg font-bold leading-snug transition-colors group-hover:text-primary">{p.title}</h3>

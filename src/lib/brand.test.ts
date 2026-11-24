@@ -65,3 +65,21 @@ describe("svg sanitiser", () => {
     expect(sanitizeSvg(svg).ok).toBe(false);
   });
 });
+
+describe("global border radius", () => {
+  it("parses, clamps and normalises the stored value", async () => {
+    const { radiusPx, radiusValue } = await import("./brand/radius");
+    expect(radiusPx("14px")).toBe(14);
+    expect(radiusPx("0px")).toBe(0);
+    expect(radiusPx("1rem")).toBe(16);
+    expect(radiusPx("999px")).toBe(40);
+    expect(radiusPx("-3px")).toBe(14);
+    expect(radiusPx("10px; color:red")).toBe(14);
+    expect(radiusValue(undefined)).toBe("14px");
+  });
+  it("injects --global-border-radius from brand settings", () => {
+    expect(brandCss({ radius: "0px" } as never, "rtl")).toContain("--global-border-radius:0px");
+    expect(brandCss({ radius: "22px" } as never, "ltr")).toContain("--global-border-radius:22px");
+    expect(brandCss(null, "ltr")).toContain("--global-border-radius:14px");
+  });
+});

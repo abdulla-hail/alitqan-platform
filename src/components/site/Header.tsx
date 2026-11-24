@@ -68,9 +68,9 @@ export async function Header({ ctx }: { ctx: SiteContext }) {
         </Link>
         <NavLinks items={items} label={t("header.menu")} mega={mega} dir={dir} />
         <div className="ms-auto flex items-center gap-1 sm:gap-1.5">
-          <span className="hidden rounded-full border border-line bg-surface sm:inline-flex"><LanguageSwitcher locale={locale} languages={languages} label={t("lang.label")} /></span>
+          <span className="hidden rounded-pill border border-line bg-surface sm:inline-flex"><LanguageSwitcher locale={locale} languages={languages} label={t("lang.label")} /></span>
           <ThemeToggle labels={themeLabels} defaultTheme={brand?.default_theme} />
-          <Link href={`/${locale}/request`} className="btn btn-primary btn-sm ms-1 hidden rounded-full px-4 md:inline-flex">
+          <Link href={`/${locale}/request`} className="btn btn-primary btn-sm ms-1 hidden rounded-pill px-4 md:inline-flex">
             <Rocket className="h-4 w-4" aria-hidden />
             {t("common.start_project")}
           </Link>
@@ -80,7 +80,7 @@ export async function Header({ ctx }: { ctx: SiteContext }) {
             mega={mega}
             labels={{ menu: t("header.menu"), close: t("header.close"), cta: t("common.start_project") }}
             ctaHref={`/${locale}/request`}
-            extra={<div className="flex items-center justify-center gap-2"><span className="rounded-full border border-line"><LanguageSwitcher locale={locale} languages={languages} label={t("lang.label")} /></span><ThemeToggle labels={themeLabels} defaultTheme={brand?.default_theme} /></div>}
+            extra={<div className="flex items-center justify-center gap-2"><span className="rounded-pill border border-line"><LanguageSwitcher locale={locale} languages={languages} label={t("lang.label")} /></span><ThemeToggle labels={themeLabels} defaultTheme={brand?.default_theme} /></div>}
           />
         </div>
       </div>

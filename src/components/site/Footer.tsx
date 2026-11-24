@@ -30,7 +30,7 @@ export function Footer({ ctx }: { ctx: SiteContext }) {
                 <p className="text-xl font-bold sm:text-2xl">{t("footer.cta_title")}</p>
                 <p className="mt-1 text-sm text-muted">{t("services.cta_text")}</p>
               </div>
-              <Link href={`/${locale}/request`} className="btn btn-primary group flex-none rounded-full px-6"><Rocket className="h-4 w-4" aria-hidden />{t("footer.cta_button")}</Link>
+              <Link href={`/${locale}/request`} className="btn btn-primary group flex-none rounded-pill px-6"><Rocket className="h-4 w-4" aria-hidden />{t("footer.cta_button")}</Link>
             </div>
 
             <div className="grid grid-cols-1 gap-10 py-12 sm:grid-cols-2 lg:grid-cols-12">
@@ -77,7 +77,7 @@ export function Footer({ ctx }: { ctx: SiteContext }) {
                 {nav.footer_bottom.filter((i) => i.is_visible).map((i) => (
                   <li key={i.id}><Link href={localeHref(i.href, locale)} className="hover:text-fg">{P(i.label)}</Link></li>
                 ))}
-                <li><a href="#main" className="inline-flex items-center gap-1.5 rounded-full border border-line px-3 py-1 hover:text-fg"><ArrowUp className="h-3.5 w-3.5" />{t("footer.back_to_top")}</a></li>
+                <li><a href="#main" className="inline-flex items-center gap-1.5 rounded-pill border border-line px-3 py-1 hover:text-fg"><ArrowUp className="h-3.5 w-3.5" />{t("footer.back_to_top")}</a></li>
               </ul>
             </div>
           </div>

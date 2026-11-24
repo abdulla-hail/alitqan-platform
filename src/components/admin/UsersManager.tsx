@@ -36,7 +36,7 @@ export function UsersManager({ users, roles, meId, myRole }: { users: U[]; roles
                       {(locked ? roles : assignable).map((r) => <option key={r.key} value={r.key}>{roleName(r.key)}</option>)}
                     </select>
                   </td>
-                  <td className="p-3">{u.is_active ? <span className="rounded-full bg-success/12 px-2.5 py-0.5 text-xs font-semibold text-success">{ar ? "مفعّل" : "Active"}</span> : <span className="rounded-full bg-danger/12 px-2.5 py-0.5 text-xs font-semibold text-danger">{ar ? "معطّل" : "Disabled"}</span>}</td>
+                  <td className="p-3">{u.is_active ? <span className="rounded-pill bg-success/12 px-2.5 py-0.5 text-xs font-semibold text-success">{ar ? "مفعّل" : "Active"}</span> : <span className="rounded-pill bg-danger/12 px-2.5 py-0.5 text-xs font-semibold text-danger">{ar ? "معطّل" : "Disabled"}</span>}</td>
                   <td className="p-3 text-xs text-muted">{fmt(u.last_seen_at)}</td>
                   <td className="p-3">
                     {!locked && (

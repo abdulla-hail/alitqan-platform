@@ -51,7 +51,7 @@ export default async function MessagesPage({ searchParams }: { searchParams: Pro
                   <p className="truncate text-sm">{m.subject || m.message}</p>
                 </div>
                 <div className="text-end">
-                  <span className={`rounded-full px-2.5 py-0.5 text-xs font-semibold ${MESSAGE_STATUS[m.status]?.tone}`}>{MESSAGE_STATUS[m.status]?.[locale]}</span>
+                  <span className={`rounded-pill px-2.5 py-0.5 text-xs font-semibold ${MESSAGE_STATUS[m.status]?.tone}`}>{MESSAGE_STATUS[m.status]?.[locale]}</span>
                   <p className="mt-1 text-xs text-muted">{fmt(m.created_at)}</p>
                 </div>
               </Link>

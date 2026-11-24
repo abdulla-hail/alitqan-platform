@@ -47,7 +47,7 @@ export function LanguagesManager({ languages, translations }: { languages: Lang[
               <span className="grid h-10 w-10 place-items-center rounded-lg bg-soft font-mono font-bold text-primary">{l.code}</span>
               <div className="min-w-0 flex-1"><p className="font-semibold">{l.native_name} <span className="text-sm text-muted">({l.name}, {l.dir.toUpperCase()})</span></p></div>
               {l.is_default ? (
-                <span className="inline-flex items-center gap-1 rounded-full bg-accent-soft px-3 py-1 text-xs font-bold"><Star className="h-3.5 w-3.5" />{ar ? "الافتراضية" : "Default"}</span>
+                <span className="inline-flex items-center gap-1 rounded-pill bg-accent-soft px-3 py-1 text-xs font-bold"><Star className="h-3.5 w-3.5" />{ar ? "الافتراضية" : "Default"}</span>
               ) : (
                 <button className="btn btn-outline btn-sm" onClick={async () => { if (result(await setDefaultLanguage(l.code))) router.refresh(); }}>{ar ? "اجعلها الافتراضية" : "Make default"}</button>
               )}

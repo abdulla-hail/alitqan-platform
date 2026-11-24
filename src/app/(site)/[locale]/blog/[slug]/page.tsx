@@ -55,7 +55,7 @@ export default async function PostPage({ params }: SlugParams) {
         <h1 className="h-display mt-5 animate-rise">{L(post.title)}</h1>
         <p className="lead mx-auto mt-5 max-w-2xl">{L(post.excerpt)}</p>
         {post.author && (
-          <p className="mt-6 inline-flex items-center gap-2 rounded-full border border-line bg-surface px-4 py-1.5 text-sm">{t("blog.by")} <span className="font-semibold">{L(post.author.name)}</span> · <span className="text-muted">{L(post.author.job_title)}</span></p>
+          <p className="mt-6 inline-flex items-center gap-2 rounded-pill border border-line bg-surface px-4 py-1.5 text-sm">{t("blog.by")} <span className="font-semibold">{L(post.author.name)}</span> · <span className="text-muted">{L(post.author.job_title)}</span></p>
         )}
         </div>
         </div>

@@ -175,7 +175,7 @@ export function ProjectsSlider({
                   <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/15 to-transparent" aria-hidden />
                   <div className="slider-caption absolute inset-x-0 bottom-0 flex items-end justify-between gap-4 p-5 text-white sm:p-8">
                     <div className="min-w-0">
-                      {s.category && <span className="inline-flex rounded-full bg-white/15 px-3 py-1 text-xs font-semibold backdrop-blur">{s.category}</span>}
+                      {s.category && <span className="inline-flex rounded-pill bg-white/15 px-3 py-1 text-xs font-semibold backdrop-blur">{s.category}</span>}
                       <h3 className="mt-3 text-2xl font-bold leading-tight sm:text-3xl lg:text-4xl">{s.title}</h3>
                       {s.excerpt && <p className="mt-2 line-clamp-2 max-w-xl text-sm text-white/80 sm:text-base">{s.excerpt}</p>}
                     </div>
@@ -198,7 +198,7 @@ export function ProjectsSlider({
             <span className="text-muted"> / {pad(count)}</span>
           </p>
           {autoplay && !reduced && (
-            <span className="relative hidden h-0.5 w-24 overflow-hidden rounded bg-line sm:block" aria-hidden>
+            <span className="relative hidden h-0.5 w-24 overflow-hidden rounded-sm bg-line sm:block" aria-hidden>
               {running && <span key={index} className="slider-progress absolute inset-0 bg-primary" />}
             </span>
           )}

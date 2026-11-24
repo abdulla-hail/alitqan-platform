@@ -5,7 +5,7 @@
    ===================================================================== */
 
 /* ---------- badge pill heading ---------- */
-.badge-pill { display: inline-flex; align-items: center; gap: 0.6rem; padding: 0.45rem 1rem; border-radius: 999px; border: 1px solid var(--color-line); background: var(--color-surface); font-size: 0.875rem; font-weight: 600; color: var(--color-fg); box-shadow: var(--shadow-sm); }
+.badge-pill { display: inline-flex; align-items: center; gap: 0.6rem; padding: 0.45rem 1rem; border-radius: var(--radius-pill); border: 1px solid var(--color-line); background: var(--color-surface); font-size: 0.875rem; font-weight: 600; color: var(--color-fg); box-shadow: var(--shadow-sm); }
 .badge-pill::before, .badge-pill::after { content: ""; width: 0.5rem; height: 0.5rem; transform: rotate(45deg); background: var(--color-accent); flex: none; }
 .badge-pill::after { background: var(--color-primary); }
 
@@ -24,14 +24,14 @@ html[data-hover="on"] .lift:hover, .lift:focus-within { transform: translateY(-4
 .social-dot { display: grid; place-items: center; height: 1.9rem; min-width: 1.9rem; padding-inline: 0.35rem; border-radius: 999px; border: 1px solid color-mix(in oklab, var(--color-primary) 35%, var(--color-line)); color: var(--color-primary); font-size: 0.7rem; font-weight: 700; transition: background-color var(--dur-base) ease, color var(--dur-base) ease, transform var(--dur-base) var(--ease-spring); }
 .social-dot:hover { background: var(--color-primary); color: var(--color-on-primary); transform: translateY(-2px); }
 
-.nav-pills { position: relative; display: flex; align-items: center; gap: 0.15rem; padding: 0.3rem; border-radius: 999px; background: var(--color-subtle); border: 1px solid var(--color-line); }
-.nav-pill { position: relative; z-index: 1; display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.5rem 0.95rem; border-radius: 999px; font-size: 0.9rem; font-weight: 600; color: color-mix(in oklab, var(--color-fg) 72%, transparent); transition: color var(--dur-base) ease; white-space: nowrap; }
+.nav-pills { position: relative; display: flex; align-items: center; gap: 0.15rem; padding: 0.3rem; border-radius: var(--radius-pill); background: var(--color-subtle); border: 1px solid var(--color-line); }
+.nav-pill { position: relative; z-index: 1; display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.5rem 0.95rem; border-radius: var(--radius-pill); font-size: 0.9rem; font-weight: 600; color: color-mix(in oklab, var(--color-fg) 72%, transparent); transition: color var(--dur-base) ease; white-space: nowrap; }
 .nav-pill svg { width: 1rem; height: 1rem; opacity: 0.7; transition: opacity var(--dur-base) ease, transform var(--dur-base) var(--ease-spring); }
 .nav-pill:hover { color: var(--color-fg); }
 .nav-pill:hover svg { opacity: 1; transform: translateY(-1px); }
 .nav-pill[aria-current="page"], .nav-pill[data-active="true"] { color: var(--color-on-primary); }
 .nav-pill[aria-current="page"] svg, .nav-pill[data-active="true"] svg { opacity: 1; }
-.nav-pill-bg { position: absolute; top: 0.3rem; bottom: 0.3rem; inset-inline-start: 0; left: 0; z-index: 0; border-radius: 999px; background: var(--color-primary); box-shadow: 0 6px 18px -8px var(--color-primary); width: var(--w, 0); transform: translateX(var(--x, 0)); opacity: var(--o, 0); transition: transform 480ms var(--ease-spring), width 480ms var(--ease-out), opacity 200ms ease; }
+.nav-pill-bg { position: absolute; top: 0.3rem; bottom: 0.3rem; inset-inline-start: 0; left: 0; z-index: 0; border-radius: var(--radius-pill); background: var(--color-primary); box-shadow: 0 6px 18px -8px var(--color-primary); width: var(--w, 0); transform: translateX(var(--x, 0)); opacity: var(--o, 0); transition: transform 480ms var(--ease-spring), width 480ms var(--ease-out), opacity 200ms ease; }
 [dir="rtl"] .nav-pill-bg { inset-inline-start: auto; }
 
 /* ---------- step cards with number block ---------- */
@@ -70,7 +70,7 @@ html[data-motion="off"] .fab::after { animation: none; }
 .tab-chip:hover { background: rgb(255 255 255 / 0.14); transform: translateY(-2px); }
 .tab-chip[aria-selected="true"] { background: #fff; color: var(--c-ink); border-color: #fff; box-shadow: 0 18px 40px -20px rgb(0 0 0 / 0.6); }
 .tab-chip[aria-selected="true"] .tab-chip-icon { background: var(--c-primary); color: #fff; }
-.tab-chip-icon { display: grid; place-items: center; width: 2.5rem; height: 2.5rem; border-radius: 0.75rem; background: rgb(255 255 255 / 0.12); transition: background-color var(--dur-base) ease; }
+.tab-chip-icon { display: grid; place-items: center; width: 2.5rem; height: 2.5rem; border-radius: var(--radius-xl); background: rgb(255 255 255 / 0.12); transition: background-color var(--dur-base) ease; }
 .scroll-x { overflow-x: auto; scrollbar-width: none; scroll-snap-type: x proximity; overscroll-behavior-x: contain; }
 .scroll-x::-webkit-scrollbar { display: none; }
 .scroll-x > * { scroll-snap-align: start; }

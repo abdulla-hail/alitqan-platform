@@ -117,10 +117,10 @@ function GalleryField({ f, value, onChange }: { f: AnyField; value: { url: strin
             <img src={g.url} alt="" className="aspect-[4/3] w-full object-cover" />
             <div className="absolute inset-x-1 top-1 flex justify-between opacity-0 transition-opacity group-hover:opacity-100 group-focus-within:opacity-100">
               <span className="flex gap-1">
-                <button type="button" onClick={() => move(i, -1)} className="rounded bg-black/60 p-1 text-white" aria-label="Move up"><ArrowUp className="h-3.5 w-3.5" /></button>
-                <button type="button" onClick={() => move(i, 1)} className="rounded bg-black/60 p-1 text-white" aria-label="Move down"><ArrowDown className="h-3.5 w-3.5" /></button>
+                <button type="button" onClick={() => move(i, -1)} className="rounded-sm bg-black/60 p-1 text-white" aria-label="Move up"><ArrowUp className="h-3.5 w-3.5" /></button>
+                <button type="button" onClick={() => move(i, 1)} className="rounded-sm bg-black/60 p-1 text-white" aria-label="Move down"><ArrowDown className="h-3.5 w-3.5" /></button>
               </span>
-              <button type="button" onClick={() => onChange(list.filter((_, j) => j !== i))} className="rounded bg-danger p-1 text-white" aria-label={d.remove}><X className="h-3.5 w-3.5" /></button>
+              <button type="button" onClick={() => onChange(list.filter((_, j) => j !== i))} className="rounded-sm bg-danger p-1 text-white" aria-label={d.remove}><X className="h-3.5 w-3.5" /></button>
             </div>
           </li>
         ))}

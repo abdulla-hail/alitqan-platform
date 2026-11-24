@@ -25,7 +25,7 @@ export default async function ActivityPage({ searchParams }: { searchParams: Pro
         {(data ?? []).map((a) => (
           <li key={a.id} className="card p-3 text-sm">
             <div className="flex items-center justify-between gap-2">
-              <span className={`rounded px-1.5 py-0.5 font-mono text-xs ${a.action === "delete" ? "bg-danger/12 text-danger" : a.action === "insert" ? "bg-success/12 text-success" : "bg-subtle"}`}>{a.action}</span>
+              <span className={`rounded-sm px-1.5 py-0.5 font-mono text-xs ${a.action === "delete" ? "bg-danger/12 text-danger" : a.action === "insert" ? "bg-success/12 text-success" : "bg-subtle"}`}>{a.action}</span>
               <span className="text-xs text-muted">{fmt(a.created_at)}</span>
             </div>
             <p className="mt-2 font-medium">{a.summary || "—"}</p>
@@ -40,7 +40,7 @@ export default async function ActivityPage({ searchParams }: { searchParams: Pro
               <tr key={a.id} className="border-b border-line/60">
                 <td className="whitespace-nowrap p-3 text-xs text-muted">{fmt(a.created_at)}</td>
                 <td className="p-3 text-xs" dir="ltr">{a.actor_email ?? "system"}</td>
-                <td className="p-3"><span className={`rounded px-1.5 py-0.5 font-mono text-xs ${a.action === "delete" ? "bg-danger/12 text-danger" : a.action === "insert" ? "bg-success/12 text-success" : "bg-subtle"}`}>{a.action}</span></td>
+                <td className="p-3"><span className={`rounded-sm px-1.5 py-0.5 font-mono text-xs ${a.action === "delete" ? "bg-danger/12 text-danger" : a.action === "insert" ? "bg-success/12 text-success" : "bg-subtle"}`}>{a.action}</span></td>
                 <td className="p-3 font-mono text-xs">{a.entity_type}</td>
                 <td className="p-3">{a.summary}{a.changes && <span className="ms-2 font-mono text-[11px] text-muted" dir="ltr">{(a.changes as string[]).join(", ")}</span>}</td>
               </tr>

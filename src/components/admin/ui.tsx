@@ -225,7 +225,7 @@ export function StatusBadge({ status, d }: { status: string; d: AdminDict }) {
     archived: "bg-muted/15 text-muted",
   };
   return (
-    <span className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-semibold ${map[status] ?? "bg-subtle text-muted"}`}>
+    <span className={`inline-flex items-center gap-1.5 rounded-pill px-2.5 py-0.5 text-xs font-semibold ${map[status] ?? "bg-subtle text-muted"}`}>
       <span className="h-1.5 w-1.5 rounded-full bg-current" aria-hidden />
       {(d as Record<string, string>)[status] ?? status}
     </span>

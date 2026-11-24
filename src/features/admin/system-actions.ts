@@ -8,6 +8,7 @@ import { safeUrl } from "./sanitize";
 import { sanitizeMotion } from "@/lib/motion";
 import { publicEnv } from "@/lib/env";
 import { sanitizeSvg } from "@/lib/svg-safety";
+import { radiusValue } from "@/lib/brand/radius";
 
 type SB = Awaited<ReturnType<typeof createSessionClient>>;
 async function codes(sb: SB) {
@@ -112,7 +113,7 @@ export async function saveBrand(input: Record<string, unknown>) {
       favicon_url: safeUrl(input.favicon_url, "favicon_url"),
       og_image_url: safeUrl(input.og_image_url, "og_image_url"),
       colors: { light: palette(colors.light, cur?.colors?.light ?? {}), dark: palette(colors.dark, cur?.colors?.dark ?? {}) },
-      radius: /^\d{1,2}(px|rem)$/.test(String(input.radius)) ? input.radius : "14px",
+      radius: radiusValue(input.radius), // Global Border Radius, clamped to 0–40px
       default_theme: ["light", "dark", "system"].includes(String(input.default_theme)) ? input.default_theme : "system",
       backgrounds: { pattern: (input.backgrounds as Record<string, unknown> | undefined)?.pattern === "none" ? "none" : "measure" },
     };

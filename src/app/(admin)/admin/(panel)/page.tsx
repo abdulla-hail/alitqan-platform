@@ -104,7 +104,7 @@ export default async function Dashboard({ searchParams }: { searchParams: Promis
           <ul className="divide-y divide-line text-sm">
             {activity.map((a) => (
               <li key={a.id} className="flex flex-wrap items-center gap-x-3 gap-y-1 py-2.5">
-                <span className="rounded bg-subtle px-1.5 py-0.5 font-mono text-xs">{a.action}</span>
+                <span className="rounded-sm bg-subtle px-1.5 py-0.5 font-mono text-xs">{a.action}</span>
                 <span className="text-muted">{a.entity_type}</span>
                 <span className="min-w-0 flex-1 truncate font-medium">{a.summary}</span>
                 <span className="text-xs text-muted" dir="ltr">{a.actor_email}</span>
