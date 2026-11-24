@@ -51,6 +51,8 @@ export interface HeroEffectSettings {
     wave_speed: number;
   };
   colors: {
+    /** custom = the colours below · brand = the identity particle colours (Brand identity → Particle colours) */
+    source: "custom" | "brand";
     particle: string;
     link: string;
     glow: string;
@@ -77,7 +79,7 @@ export const HERO_EFFECT_DEFAULTS: HeroEffectSettings = {
   fallback: "static",
   particles: { size: 1.6, opacity: 0.6, speed: 0.35, randomness: 0.12, return_speed: 0.05, link_density: 1, link_distance: 64 },
   interaction: { repulsion: true, force: 1, radius: 150, response: 0.18, release: 0.06, touch: true, click_wave: true, wave_strength: 1, wave_speed: 1 },
-  colors: { particle: "#3D7BFF", link: "#2563EB", glow: "#00C8FD", gradient: true, gradient_to: "#00C8FD", intensity: 0.55, link_opacity: 0.22, hover_glow: 0.75 },
+  colors: { source: "custom", particle: "#3D7BFF", link: "#2563EB", glow: "#00C8FD", gradient: true, gradient_to: "#00C8FD", intensity: 0.55, link_opacity: 0.22, hover_glow: 0.75 },
   area: { height: 100, width: 100, position: "center", center_density: 1, edge_density: 0.8, text_clarity: 0.8, protect_padding: 28 },
   devices: {
     desktop: { spacing: 38, max_particles: 1400, size_scale: 1, speed_scale: 1, force_scale: 1 },
@@ -184,6 +186,7 @@ export function sanitizeHeroEffect(input: unknown): HeroEffectSettings {
       wave_speed: r("wave_speed", i.wave_speed, D.interaction.wave_speed),
     },
     colors: {
+      source: pickOne(c.source, ["custom", "brand"] as const, D.colors.source),
       particle: color(c.particle, D.colors.particle),
       link: color(c.link, D.colors.link),
       glow: color(c.glow, D.colors.glow),
@@ -215,5 +218,11 @@ export const deviceFor = (width: number): DeviceKey => (width < 640 ? "mobile" :
 
 /** Whether the animated effect should run for this device. */
 export const effectRunsOn = (s: HeroEffectSettings, dev: DeviceKey) => s.mode === "all" || (s.mode === "desktop" && dev === "desktop");
+
+/** Hero colours taken from the identity when the admin chose "use identity colours". */
+export function withBrandColors(s: HeroEffectSettings, brand?: { particle: string; link: string; glow: string } | null): HeroEffectSettings {
+  if (s.colors.source !== "brand" || !brand) return s;
+  return { ...s, colors: { ...s.colors, particle: brand.particle, link: brand.link, glow: brand.glow, gradient_to: brand.glow } };
+}
 
 export const sameSettings = (a: HeroEffectSettings, b: HeroEffectSettings) => JSON.stringify(a) === JSON.stringify(b);

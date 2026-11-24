@@ -9,9 +9,10 @@ export const dynamic = "force-dynamic";
 export default async function HeroEffectPage() {
   await requirePage("settings.manage");
   const sb = await createSessionClient();
-  const [{ data: rows }, { data: hero }] = await Promise.all([
+  const [{ data: rows }, { data: hero }, { data: brand }] = await Promise.all([
     sb.from("site_settings").select("key,value,updated_at").in("key", ["hero_effect", "hero_effect_draft"]),
     sb.from("page_sections").select("content, pages!inner(slug)").eq("type", "hero").eq("pages.slug", "home").order("position").limit(1).maybeSingle(),
+    sb.from("brand_settings").select("backgrounds").eq("id", 1).maybeSingle(),
   ]);
   const row = (k: string) => rows?.find((r) => r.key === k);
   const live = row("hero_effect");
@@ -25,6 +26,7 @@ export default async function HeroEffectPage() {
       publishedAt={live && Object.keys((live.value as object) ?? {}).length ? (live.updated_at as string) : null}
       draftAt={hasDraft ? (draft?.updated_at as string) : null}
       heroTitle={title}
+      brandColors={(brand?.backgrounds as Record<string, unknown> | null)?.particles}
     />
   );
 }

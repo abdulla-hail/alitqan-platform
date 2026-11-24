@@ -30,8 +30,10 @@ export interface LogoSystem {
   on_light?: "color" | "dark" | "mono";
   /** variant used on dark surfaces (dark theme, ink sections) */
   on_dark?: "light" | "white" | "color" | "mono";
-  /** show the brand name as text beside the mark */
+  /** show the company name beside the mark in the header */
   show_name?: boolean;
+  /** company name shown beside the mark in the header (falls back to the brand name) */
+  header_name?: Partial<Record<string, string>>;
   previous_colors?: unknown;
 }
 
@@ -51,7 +53,9 @@ export interface BrandSettings {
   colors: { light: Palette; dark: Palette };
   fonts: import("@/lib/brand/fonts").Typography;
   radius: string;
-  backgrounds: Record<string, string>;
+  /** pattern: "measure" | "none"; particles: brand particle colours (lib/brand/particles.ts) */
+  backgrounds: Record<string, unknown>;
+  /** "system" is legacy data only and is treated as light */
   default_theme: "light" | "dark" | "system";
   updated_at?: string;
 }

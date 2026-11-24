@@ -104,31 +104,44 @@ export function Logo({
   size = "md",
   surface = "auto",
   previewColors,
+  context = "other",
 }: {
   brand: BrandSettings | null;
   locale: string;
   size?: "sm" | "md" | "lg";
   surface?: "auto" | "light" | "dark";
   previewColors?: MarkColors & { mono?: string };
+  /** "header": the CMS "show company name beside the logo in the header" setting applies */
+  context?: "header" | "other";
 }) {
-  const name = pick(brand?.name, locale) || "ALITQAN";
-  const h = size === "lg" ? "h-16" : size === "sm" ? "h-10" : "h-12 sm:h-[3.25rem]";
   const sys = brand?.logo_system ?? null;
+  const brandName = pick(brand?.name, locale) || "ALITQAN";
+  // header name: Arabic in the Arabic UI, English in the English UI; empty → brand name
+  const headerName = (sys?.header_name?.[locale] || "").trim() || brandName;
+  const inHeaderWithName = context === "header" && Boolean(sys?.show_name);
+  const name = inHeaderWithName ? headerName : brandName;
+  const h = size === "lg" ? "h-16" : size === "sm" ? "h-10" : "h-12 sm:h-[3.25rem]";
+  const nameEl = (
+    <span className="min-w-0 max-w-[8.5rem] truncate font-display text-[1.05rem] font-bold leading-tight tracking-tight sm:max-w-[13rem] sm:text-xl 2xl:max-w-[20rem]" data-logo-name>
+      {name}
+    </span>
+  );
   if (brand?.logo_mode === "uploaded" && brand.logo_url) {
     const forced = surface === "dark" && brand.logo_dark_url ? brand.logo_dark_url : brand.logo_url;
     const swap = surface === "auto" && brand.logo_dark_url;
     return (
-      <span className="inline-flex items-center" aria-label={name}>
+      <span className="inline-flex min-w-0 items-center gap-2.5" aria-label={name}>
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src={forced} alt={name} className={`${h} w-auto ${swap ? "dark:hidden" : ""}`} />
         {swap && (
           // eslint-disable-next-line @next/next/no-img-element
           <img src={brand.logo_dark_url!} alt={name} className={`${h} hidden w-auto dark:block`} />
         )}
+        {inHeaderWithName && nameEl}
       </span>
     );
   }
-  const showName = brand?.logo_mode === "symbol_text" || Boolean(sys?.show_name);
+  const showName = brand?.logo_mode === "symbol_text" || inHeaderWithName;
   const mark =
     brand?.logo_mode === "symbol_text" && brand.symbol_url ? (
       // eslint-disable-next-line @next/next/no-img-element
@@ -137,9 +150,9 @@ export function Logo({
       <MarkPair className={`${h} w-auto`} surface={surface} sys={sys} colors={previewColors} />
     );
   return (
-    <span className="inline-flex items-center gap-2.5" aria-label={name} role="img">
+    <span className="inline-flex min-w-0 items-center gap-2 sm:gap-2.5" aria-label={name} role="img">
       {mark}
-      {showName ? <span className="font-display text-xl font-bold tracking-tight">{name}</span> : <span className="sr-only">{name}</span>}
+      {showName ? nameEl : <span className="sr-only">{name}</span>}
     </span>
   );
 }

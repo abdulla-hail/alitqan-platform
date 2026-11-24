@@ -98,17 +98,16 @@ export function BrandManager({ brand }: { brand: BrandSettings }) {
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <div>
             <label className="label">{ar ? "نمط الخلفية" : "Background pattern"}</label>
-            <select className="input" value={b.backgrounds?.pattern ?? "measure"} onChange={(e) => set("backgrounds", { ...b.backgrounds, pattern: e.target.value })}>
+            <select className="input" value={String(b.backgrounds?.pattern ?? "measure")} onChange={(e) => set("backgrounds", { ...b.backgrounds, pattern: e.target.value })}>
               <option value="measure">{ar ? "شبكة نقاط القياس" : "Measure dot grid"}</option>
               <option value="none">{ar ? "بدون" : "None"}</option>
             </select>
           </div>
           <div>
-            <label className="label">{ar ? "الثيم الافتراضي للزوار" : "Default theme for visitors"}</label>
-            <select className="input" value={b.default_theme} onChange={(e) => set("default_theme", e.target.value as BrandSettings["default_theme"])}>
-              <option value="system">{ar ? "حسب النظام" : "System"}</option>
-              <option value="light">{ar ? "فاتح" : "Light"}</option>
-              <option value="dark">{ar ? "داكن" : "Dark"}</option>
+            <label className="label">{ar ? "الوضع الافتراضي لأول زيارة" : "Mode for first-time visitors"}</label>
+            <select className="input" value={b.default_theme === "dark" ? "dark" : "light"} onChange={(e) => set("default_theme", e.target.value as BrandSettings["default_theme"])}>
+              <option value="light">{ar ? "نهاري" : "Light"}</option>
+              <option value="dark">{ar ? "ليلي" : "Dark"}</option>
             </select>
           </div>
         </div>

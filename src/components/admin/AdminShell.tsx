@@ -182,7 +182,7 @@ export function AdminShell({ children, user, counts }: { children: React.ReactNo
           <button type="button" className="btn btn-ghost btn-sm" onClick={() => setAdminLocale(locale === "ar" ? "en" : "ar")} title={d.interface_language}>
             {locale === "ar" ? "EN" : "ع"}
           </button>
-          <ThemeToggle labels={{ label: d.theme, light: "Light", dark: "Dark", system: "System" }} />
+          <ThemeToggle labels={{ label: d.theme, light: locale === "ar" ? "الوضع النهاري" : "Light mode", dark: locale === "ar" ? "الوضع الليلي" : "Dark mode" }} />
           <details className="group relative">
             <summary className="btn btn-ghost btn-sm list-none [&::-webkit-details-marker]:hidden">
               <UserCircle className="h-5 w-5" />

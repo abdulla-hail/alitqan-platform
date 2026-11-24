@@ -9,6 +9,7 @@ import { sanitizeMotion } from "@/lib/motion";
 import { publicEnv } from "@/lib/env";
 import { sanitizeSvg } from "@/lib/svg-safety";
 import { radiusValue } from "@/lib/brand/radius";
+import { sanitizeBrandParticles } from "@/lib/brand/particles";
 
 type SB = Awaited<ReturnType<typeof createSessionClient>>;
 async function codes(sb: SB) {
@@ -73,6 +74,7 @@ function cleanLogoSystem(v: unknown, prev: Record<string, unknown> | null | unde
     on_light: ["color", "dark", "mono"].includes(String(o.on_light)) ? o.on_light : "color",
     on_dark: ["light", "white", "color", "mono"].includes(String(o.on_dark)) ? o.on_dark : "light",
     show_name: Boolean(o.show_name),
+    header_name: Object.fromEntries(Object.entries(o.header_name && typeof o.header_name === "object" ? (o.header_name as Record<string, unknown>) : {}).filter(([k, v]) => /^[a-z]{2}(-[A-Z]{2})?$/.test(k) && typeof v === "string" && v.trim()).map(([k, v]) => [k, String(v).replace(/[<>]/g, "").trim().slice(0, 40)])),
     // server-owned: never taken from the client
     ...(prev?.previous_colors ? { previous_colors: prev.previous_colors } : {}),
   };
@@ -114,8 +116,11 @@ export async function saveBrand(input: Record<string, unknown>) {
       og_image_url: safeUrl(input.og_image_url, "og_image_url"),
       colors: { light: palette(colors.light, cur?.colors?.light ?? {}), dark: palette(colors.dark, cur?.colors?.dark ?? {}) },
       radius: radiusValue(input.radius), // Global Border Radius, clamped to 0–40px
-      default_theme: ["light", "dark", "system"].includes(String(input.default_theme)) ? input.default_theme : "system",
-      backgrounds: { pattern: (input.backgrounds as Record<string, unknown> | undefined)?.pattern === "none" ? "none" : "measure" },
+      default_theme: input.default_theme === "dark" ? "dark" : "light", // two modes only — no device/system mode
+      backgrounds: {
+        pattern: (input.backgrounds as Record<string, unknown> | undefined)?.pattern === "none" ? "none" : "measure",
+        particles: sanitizeBrandParticles((input.backgrounds as Record<string, unknown> | undefined)?.particles),
+      },
     };
     if (row.logo_mode === "uploaded" && !row.logo_url) throw new Error("invalid input: logo_url required");
     for (const f of ["logo_url", "logo_dark_url", "logo_alt_url", "symbol_url", "favicon_url", "og_image_url"] as const) await assertSafeSvgUrl(row[f] ?? null, f);

@@ -83,3 +83,8 @@ html[data-motion="off"] .fab::after { animation: none; }
 [data-hero-host] .hero-dotgrid { transition: opacity 600ms ease; }
 [data-hero-host]:is([data-effect="running"], [data-effect="static"]) .hero-dotgrid { opacity: 0; }
 [data-hero-host][data-effect="none"] .hero-glow { display: none; }
+
+/* subtle background particles (AmbientParticles): the layer sits behind the section's content */
+[data-ambient-host] { isolation: isolate; }
+[data-ambient-host]:not(.sticky):not(.fixed):not(.absolute) { position: relative; }
+[data-ambient-layer] { position: absolute; inset: 0; z-index: -1; overflow: hidden; pointer-events: none; }

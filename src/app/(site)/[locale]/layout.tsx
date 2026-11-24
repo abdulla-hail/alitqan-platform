@@ -8,6 +8,8 @@ import { SetupNotice } from "@/components/site/SetupNotice";
 import { MotionRuntime } from "@/components/motion/MotionRuntime";
 import { brandCss, fontStacks, fontsHref } from "@/lib/brand/theme";
 import { motionHtmlAttrs } from "@/lib/motion";
+import { AmbientParticles } from "@/components/effects/AmbientParticles";
+import { sanitizeBrandParticles } from "@/lib/brand/particles";
 import { getSiteContext, getLanguages, SetupRequiredError } from "@/services/site";
 import { buildMetadata, organizationJsonLd } from "@/lib/seo";
 
@@ -20,8 +22,8 @@ export async function generateStaticParams() {
 export const viewport: Viewport = {
   viewportFit: "cover",
   themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#F7F9FD" },
-    { media: "(prefers-color-scheme: dark)", color: "#070B1A" },
+    // browser UI colour follows the site's own light/dark switch (set at runtime), never the device setting
+    { color: "#F7F9FD" },
   ],
 };
 
@@ -62,7 +64,7 @@ export default async function SiteLayout({ children, params }: { children: React
   return (
     <html lang={ctx.locale} dir={ctx.dir} suppressHydrationWarning {...motion}>
       <head>
-        <ThemeScript defaultTheme={ctx.brand?.default_theme ?? "system"} />
+        <ThemeScript defaultTheme={ctx.brand?.default_theme} />
         {fontHref && (
           <>
             <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -77,6 +79,7 @@ export default async function SiteLayout({ children, params }: { children: React
         <div className="scroll-progress" aria-hidden />
         <Header ctx={ctx} />
         <main id="main" className="flex-1">{children}</main>
+        <AmbientParticles colors={sanitizeBrandParticles(ctx.brand?.backgrounds?.particles)} />
         <Footer ctx={ctx} />
         <MotionRuntime />
         {ga && (

@@ -38,7 +38,7 @@ export async function Header({ ctx }: { ctx: SiteContext }) {
   };
   const contact = settings.contact ?? {};
   const social = Object.entries((settings.social ?? {}) as Record<string, string>).filter(([k, v]) => SOCIAL_SHORT[k] && /^https?:\/\//.test(v ?? ""));
-  const themeLabels = { label: t("theme.label"), light: t("theme.light"), dark: t("theme.dark"), system: t("theme.system") };
+  const themeLabels = { label: t("theme.label"), light: t("theme.light"), dark: t("theme.dark") };
 
   const utility = (contact.email || contact.phones?.length || social.length) ? (
     <div className="utility-bar hidden border-b border-line/60 bg-bg md:block">
@@ -63,13 +63,17 @@ export async function Header({ ctx }: { ctx: SiteContext }) {
         {t("common.skip_to_content")}
       </a>
       <div className="container-x header-row flex items-center gap-3">
-        <Link href={`/${locale}`} className="shrink-0 transition-opacity hover:opacity-85" aria-label={P(brand?.name)}>
-          <Logo brand={brand} locale={locale} />
+        <Link href={`/${locale}`} className="min-w-0 shrink transition-opacity hover:opacity-85 xl:shrink-0" aria-label={P(brand?.name)}>
+          <Logo brand={brand} locale={locale} context="header" />
         </Link>
         <NavLinks items={items} label={t("header.menu")} mega={mega} dir={dir} />
         <div className="ms-auto flex items-center gap-1 sm:gap-1.5">
-          <span className="hidden rounded-pill border border-line bg-surface sm:inline-flex"><LanguageSwitcher locale={locale} languages={languages} label={t("lang.label")} /></span>
-          <ThemeToggle labels={themeLabels} defaultTheme={brand?.default_theme} />
+          {/* language + light/dark sit together; phones get the compact language icon */}
+          <div className="flex items-center gap-0.5 sm:gap-1.5" data-header-controls>
+            <LanguageSwitcher locale={locale} languages={languages} label={t("lang.label")} variant="icon" className="sm:hidden" />
+            <span className="hidden rounded-pill border border-line bg-surface sm:inline-flex"><LanguageSwitcher locale={locale} languages={languages} label={t("lang.label")} /></span>
+            <ThemeToggle labels={themeLabels} />
+          </div>
           <Link href={`/${locale}/request`} className="btn btn-primary btn-sm ms-1 hidden rounded-pill px-4 md:inline-flex">
             <Rocket className="h-4 w-4" aria-hidden />
             {t("common.start_project")}
@@ -80,7 +84,7 @@ export async function Header({ ctx }: { ctx: SiteContext }) {
             mega={mega}
             labels={{ menu: t("header.menu"), close: t("header.close"), cta: t("common.start_project") }}
             ctaHref={`/${locale}/request`}
-            extra={<div className="flex items-center justify-center gap-2"><span className="rounded-pill border border-line"><LanguageSwitcher locale={locale} languages={languages} label={t("lang.label")} /></span><ThemeToggle labels={themeLabels} defaultTheme={brand?.default_theme} /></div>}
+            extra={<div className="flex items-center justify-center gap-2"><span className="rounded-pill border border-line"><LanguageSwitcher locale={locale} languages={languages} label={t("lang.label")} /></span><ThemeToggle labels={themeLabels} /></div>}
           />
         </div>
       </div>

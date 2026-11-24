@@ -26,6 +26,38 @@ export interface EngineOptions {
   device?: DeviceKey;
   /** render a single still frame (reduced motion / static fallback) */
   still?: boolean;
+  /** drive this engine from a shared frame loop (many subtle fields, one requestAnimationFrame) */
+  scheduler?: FrameScheduler;
+}
+
+/** One requestAnimationFrame loop for any number of engines; idles when none are active. */
+export class FrameScheduler {
+  private active = new Set<ParticleEngine>();
+  private raf = 0;
+  private last = 0;
+  add(e: ParticleEngine) {
+    this.active.add(e);
+    if (!this.raf) {
+      this.last = performance.now();
+      this.raf = requestAnimationFrame(this.loop);
+    }
+  }
+  remove(e: ParticleEngine) {
+    this.active.delete(e);
+    if (!this.active.size && this.raf) {
+      cancelAnimationFrame(this.raf);
+      this.raf = 0;
+    }
+  }
+  get size() {
+    return this.active.size;
+  }
+  private loop = (now: number) => {
+    const dt = Math.min(2.5, (now - this.last) / 16.667);
+    this.last = now;
+    for (const e of this.active) e.frame(dt);
+    this.raf = this.active.size ? requestAnimationFrame(this.loop) : 0;
+  };
 }
 
 const BUCKETS = 5;
@@ -81,6 +113,7 @@ export class ParticleEngine {
   destroy() {
     this.running = false;
     cancelAnimationFrame(this.raf);
+    this.o.scheduler?.remove(this);
     this.ro?.disconnect();
     this.io?.disconnect();
     this.off.forEach((f) => f());
@@ -242,6 +275,7 @@ export class ParticleEngine {
     if (this.running || !this.visible || document.hidden) return;
     if (!effectRunsOn(this.o.settings, this.dev) && !this.o.device) return void this.draw();
     this.running = true;
+    if (this.o.scheduler) return void this.o.scheduler.add(this);
     let last = performance.now();
     const loop = (now: number) => {
       if (!this.running) return;
@@ -257,6 +291,14 @@ export class ParticleEngine {
   private stop() {
     this.running = false;
     cancelAnimationFrame(this.raf);
+    this.o.scheduler?.remove(this);
+  }
+
+  /** one simulation + paint step (called by the shared FrameScheduler) */
+  frame(dt: number) {
+    if (!this.running) return;
+    this.step(dt);
+    this.draw();
   }
 
   private step(dt: number) {

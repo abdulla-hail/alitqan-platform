@@ -53,7 +53,7 @@ function Card({ letter, title, children, desc }: { letter: string; title: string
 
 const fmt = (iso: string | null, ar: boolean) => (iso ? new Date(iso).toLocaleString(ar ? "ar-SA" : "en-GB", { dateStyle: "medium", timeStyle: "short" }) : "—");
 
-export function HeroEffectManager({ published, draft, publishedAt, draftAt, heroTitle }: { published: HeroEffectSettings; draft: HeroEffectSettings; publishedAt: string | null; draftAt: string | null; heroTitle: Record<string, string> }) {
+export function HeroEffectManager({ published, draft, publishedAt, draftAt, heroTitle, brandColors }: { published: HeroEffectSettings; draft: HeroEffectSettings; publishedAt: string | null; draftAt: string | null; heroTitle: Record<string, string>; brandColors?: unknown }) {
   const { locale } = useAdmin();
   const ar = locale === "ar";
   const result = useResult();
@@ -186,6 +186,19 @@ export function HeroEffectManager({ published, draft, publishedAt, draftAt, hero
           </Card>
 
           <Card letter={ar ? "د" : "D"} title={ar ? "الألوان والإضاءة" : "Colours & light"}>
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2" role="radiogroup">
+              {([
+                ["custom", ar ? "ألوان مخصصة لهذا القسم" : "Custom colours for the hero"],
+                ["brand", ar ? "استخدام ألوان الهوية (ألوان الجسيمات)" : "Use identity colours (particle colours)"],
+              ] as const).map(([v, t]) => (
+                <label key={v} className="flex cursor-pointer items-center gap-2 rounded-xl border border-line p-3 has-[:checked]:border-primary has-[:checked]:bg-soft">
+                  <input type="radio" name="color-source" checked={s.colors.source === v} onChange={() => set("colors", { source: v })} />
+                  <span className="text-sm font-medium">{t}</span>
+                </label>
+              ))}
+            </div>
+            {s.colors.source === "brand" && <p className="text-xs text-muted">{ar ? "الألوان تأتي من «الهوية البصرية ← ألوان الجسيمات». باقي إعدادات الإضاءة أدناه تبقى مستقلة." : "Colours come from Brand identity → Particle colours. The light settings below stay independent."}</p>}
+            <fieldset disabled={s.colors.source === "brand"} className="space-y-4 disabled:opacity-50">
             <div className="flex flex-wrap gap-2">
               {HERO_COLOR_PRESETS.map((p) => (
                 <button key={p.id} type="button" onClick={() => setS((c) => sanitizeHeroEffect({ ...c, colors: { ...c.colors, ...p.colors } }))} className="inline-flex items-center gap-2 rounded-pill border border-line px-3 py-1.5 text-sm hover:border-primary">
@@ -205,6 +218,7 @@ export function HeroEffectManager({ published, draft, publishedAt, draftAt, hero
               <Switch checked={s.colors.gradient} onChange={(v) => set("colors", { gradient: v })} label={ar ? "استخدام تدرج لوني" : "Use a gradient"} />
               {s.colors.gradient && <Color label={ar ? "لون نهاية التدرج" : "Gradient end"} value={s.colors.gradient_to} onChange={(v) => set("colors", { gradient_to: v })} />}
             </div>
+            </fieldset>
             <div className="grid grid-cols-1 gap-5 sm:grid-cols-3">
               <Range k="intensity" label={ar ? "قوة الإضاءة" : "Light intensity"} value={s.colors.intensity} onChange={(v) => set("colors", { intensity: v })} />
               <Range k="link_opacity" label={ar ? "شفافية الخطوط" : "Link opacity"} value={s.colors.link_opacity} onChange={(v) => set("colors", { link_opacity: v })} />
@@ -265,7 +279,7 @@ export function HeroEffectManager({ published, draft, publishedAt, draftAt, hero
             <div className="rounded-2xl border border-line bg-subtle p-2 sm:p-3">
               <div className={`mx-auto transition-[max-width] duration-500 ${frame}`}>
                 <div key={replay} className="panel-soft relative isolate flex min-h-[420px] cursor-crosshair flex-col items-center justify-center overflow-hidden px-4 py-14 text-center sm:min-h-[480px]" data-hero-host data-preview-host>
-                  <HeroParticles settings={s} device={device} preview />
+                  <HeroParticles settings={s} device={device} preview brandColors={brandColors} />
                   <p className="badge-pill">{ar ? "معاينة" : "Preview"}</p>
                   <h3 className={`mt-6 font-display font-bold leading-[1.15] ${device === "mobile" ? "text-3xl" : "text-4xl sm:text-5xl"}`} data-hero-title>{title}</h3>
                   <div className="mt-8 flex flex-wrap justify-center gap-3">

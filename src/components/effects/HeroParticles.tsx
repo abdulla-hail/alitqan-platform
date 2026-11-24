@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useRef } from "react";
-import { deviceFor, effectRunsOn, sanitizeHeroEffect, type DeviceKey, type HeroEffectSettings } from "@/lib/hero-effect";
+import { deviceFor, effectRunsOn, sanitizeHeroEffect, withBrandColors, type DeviceKey, type HeroEffectSettings } from "@/lib/hero-effect";
+import { sanitizeBrandParticles } from "@/lib/brand/particles";
 import type { ParticleEngine } from "@/lib/effects/particle-engine";
 
 /**
@@ -11,11 +12,11 @@ import type { ParticleEngine } from "@/lib/effects/particle-engine";
  *   "static" (one still frame of the grid), "glow" (soft CSS glows only), "none".
  * - Sets data-effect on the host so CSS can hide the old dot grid / glows accordingly.
  */
-export function HeroParticles({ settings, device, preview = false }: { settings: HeroEffectSettings | unknown; device?: DeviceKey; preview?: boolean }) {
+export function HeroParticles({ settings, device, preview = false, brandColors }: { settings: HeroEffectSettings | unknown; device?: DeviceKey; preview?: boolean; brandColors?: unknown }) {
   const wrap = useRef<HTMLDivElement>(null);
   const canvas = useRef<HTMLCanvasElement>(null);
   const engine = useRef<ParticleEngine | null>(null);
-  const cfg = sanitizeHeroEffect(settings);
+  const cfg = withBrandColors(sanitizeHeroEffect(settings), brandColors ? sanitizeBrandParticles(brandColors) : null);
   const key = JSON.stringify(cfg);
 
   useEffect(() => {
@@ -23,7 +24,7 @@ export function HeroParticles({ settings, device, preview = false }: { settings:
     if (!el || !cv) return;
     const host = (el.closest("[data-hero-host]") as HTMLElement | null) ?? el.parentElement!;
     const protect = host.querySelector<HTMLElement>("[data-hero-title]");
-    const s = sanitizeHeroEffect(JSON.parse(key));
+    const s = JSON.parse(key) as HeroEffectSettings;
     const dev = device ?? deviceFor(window.innerWidth);
     const reduced =
       !preview && (window.matchMedia("(prefers-reduced-motion: reduce)").matches || document.documentElement.dataset.motion === "off");

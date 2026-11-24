@@ -36,7 +36,7 @@ export default async function AdminRootLayout({ children }: { children: React.Re
   return (
     <html lang={locale} dir={dir} suppressHydrationWarning {...motion}>
       <head>
-        <ThemeScript defaultTheme="system" />
+        <ThemeScript defaultTheme="light" />
         {href && <link rel="stylesheet" href={href} />}
         <style dangerouslySetInnerHTML={{ __html: brandCss(brand as BrandSettings | null, dir, { scope: "admin", customFonts: custom }) }} />
       </head>

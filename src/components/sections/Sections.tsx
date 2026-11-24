@@ -84,7 +84,7 @@ async function Hero({ section, ctx }: { section: PageSection; ctx: SiteContext }
         <div className="hero-glow pointer-events-none absolute -top-40 start-[-10%] -z-10 h-[30rem] w-[30rem] rounded-full bg-primary/15 blur-3xl animate-glow" aria-hidden />
         <div className="hero-glow pointer-events-none absolute -bottom-40 end-[-10%] -z-10 h-[26rem] w-[26rem] rounded-full bg-accent/15 blur-3xl animate-glow [animation-delay:-4s]" aria-hidden />
         {/* interactive particle grid — settings: CMS → Hero effect (site_settings.hero_effect) */}
-        <HeroParticles settings={ctx.settings.hero_effect} />
+        <HeroParticles settings={ctx.settings.hero_effect} brandColors={ctx.brand?.backgrounds?.particles} />
 
         <div className="container-x flex flex-col items-center pb-10 pt-14 text-center sm:pt-20">
           {L("eyebrow") && <p className="badge-pill hero-in">{L("eyebrow")}</p>}

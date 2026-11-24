@@ -4,6 +4,9 @@ import { BrandMark, Logo, markColors } from "@/components/brand/Logo";
 import { MARK_DEFAULT_COLORS, MARK_DEFAULT_MONO, type MarkVariant } from "@/lib/brand/mark";
 import type { BrandSettings, LogoSystem, Palette } from "@/types/content";
 import { FieldEditor } from "./FieldEditor";
+import { Switch } from "./ui";
+import { AmbientPreview } from "@/components/effects/AmbientPreview";
+import { BRAND_PARTICLES_DEFAULTS, sanitizeBrandParticles, type BrandParticles } from "@/lib/brand/particles";
 
 const COLOR_FIELDS = [
   ["dark", "اللون الأساسي الداكن", "Deep navy"],
@@ -29,6 +32,8 @@ export function LogoIdentityPanel({ b, set, ar }: { b: BrandSettings; set: <K ex
   const preview = { ...b, logo_system: sys };
   const onLight = (sys.on_light ?? "color") as MarkVariant;
   const onDark = (sys.on_dark ?? "light") as MarkVariant;
+  const particles = sanitizeBrandParticles(b.backgrounds?.particles);
+  const setParticles = (p: BrandParticles) => set("backgrounds", { ...b.backgrounds, particles: p });
 
   return (
     <section className="card space-y-6 p-6" aria-labelledby="identity-h">
@@ -95,7 +100,7 @@ export function LogoIdentityPanel({ b, set, ar }: { b: BrandSettings; set: <K ex
       </div>
 
       {/* variant per background */}
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <div>
           <label className="label" htmlFor="on-light">{ar ? "النسخة على الخلفيات الفاتحة" : "Version on light backgrounds"}</label>
           <select id="on-light" className="input" value={onLight} onChange={(e) => setSys({ on_light: e.target.value as LogoSystem["on_light"] })}>
@@ -113,10 +118,79 @@ export function LogoIdentityPanel({ b, set, ar }: { b: BrandSettings; set: <K ex
             <option value="mono">{ar ? "أحادية اللون" : "Monochrome"}</option>
           </select>
         </div>
-        <label className="flex items-center gap-2 self-end rounded-xl border border-line p-3">
-          <input type="checkbox" checked={Boolean(sys.show_name)} onChange={(e) => setSys({ show_name: e.target.checked })} />
-          <span className="text-sm">{ar ? "إظهار اسم العلامة بجانب الرمز" : "Show brand name next to the mark"}</span>
-        </label>
+      </div>
+
+      {/* company name beside the logo (header only) */}
+      <div className="space-y-4 rounded-2xl border border-line p-4 sm:p-5" data-header-name-settings>
+        <div className="flex flex-wrap items-start justify-between gap-3">
+          <div>
+            <h3 className="font-bold">{ar ? "إظهار اسم الشركة بجوار الشعار في الهيدر" : "Show the company name beside the logo in the header"}</h3>
+            <p className="mt-1 text-sm text-muted">{ar ? "الاسم العربي يظهر في الواجهة العربية والإنجليزي في الإنجليزية. اتركهما فارغين لاستخدام اسم العلامة." : "Arabic name in the Arabic site, English in the English site. Leave empty to use the brand name."}</p>
+          </div>
+          <Switch checked={Boolean(sys.show_name)} onChange={(v) => setSys({ show_name: v })} label={sys.show_name ? (ar ? "ظاهر" : "Shown") : ar ? "الشعار فقط" : "Logo only"} />
+        </div>
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <label className="block">
+            <span className="label">{ar ? "الاسم بالعربية" : "Name in Arabic"}</span>
+            <input className="input" dir="rtl" lang="ar" maxLength={40} value={sys.header_name?.ar ?? ""} placeholder={b.name?.ar || "إتقان"} onChange={(e) => setSys({ header_name: { ...sys.header_name, ar: e.target.value } })} />
+          </label>
+          <label className="block">
+            <span className="label">{ar ? "الاسم بالإنجليزية" : "Name in English"}</span>
+            <input className="input" dir="ltr" lang="en" maxLength={40} value={sys.header_name?.en ?? ""} placeholder={b.name?.en || "ALITQAN"} onChange={(e) => setSys({ header_name: { ...sys.header_name, en: e.target.value } })} />
+          </label>
+        </div>
+        <div className="grid grid-cols-1 gap-3 md:grid-cols-2" aria-label={ar ? "معاينة الهيدر" : "Header preview"}>
+          {(["ar", "en"] as const).map((lng) => (
+            <div key={lng} dir={lng === "ar" ? "rtl" : "ltr"} className="flex h-16 items-center justify-between gap-3 rounded-xl border border-line bg-white px-4 text-[#0A1433]" data-header-preview={lng}>
+              <Logo brand={preview} locale={lng} surface="light" context="header" previewColors={colors} />
+              <span className="flex items-center gap-1.5 text-slate-400" aria-hidden><span className="h-8 w-8 rounded-full border border-slate-200" /><span className="h-8 w-8 rounded-full border border-slate-200" /></span>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* particle colours (shared by every page's subtle background particles; optional for the hero) */}
+      <div className="space-y-4 rounded-2xl border border-line p-4 sm:p-5" data-particle-settings>
+        <div className="flex flex-wrap items-start justify-between gap-3">
+          <div>
+            <h3 className="font-bold">{ar ? "ألوان الجسيمات" : "Particle colours"}</h3>
+            <p className="mt-1 text-sm text-muted">{ar ? "تُطبَّق على الجسيمات الخفيفة في جميع أقسام الموقع، وتُضبط تلقائياً للوضع الليلي. تأثير القسم الرئيسي له إعداداته المستقلة ويمكنه استخدام هذه الألوان." : "Used by the subtle particles in every section, auto-tuned for dark mode. The hero effect has its own settings and can use these colours."}</p>
+          </div>
+          <button type="button" className="btn btn-ghost min-h-0 px-3 py-1.5 text-sm" onClick={() => setParticles(BRAND_PARTICLES_DEFAULTS)}>
+            <RotateCcw className="h-4 w-4" />{ar ? "الألوان الافتراضية" : "Defaults"}
+          </button>
+        </div>
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+          {([
+            ["particle", ar ? "اللون الأساسي للجسيمات" : "Particle colour"],
+            ["link", ar ? "لون خطوط الاتصال" : "Link colour"],
+            ["glow", ar ? "لون التوهج" : "Glow colour"],
+          ] as const).map(([k, label]) => (
+            <label key={k} className="block">
+              <span className="label">{label}</span>
+              <span className="flex items-center gap-2">
+                <input type="color" value={particles[k]} onChange={(e) => setParticles({ ...particles, [k]: e.target.value.toUpperCase() })} className="h-10 w-12 flex-none cursor-pointer rounded border border-line bg-transparent" aria-label={label} />
+                <input value={particles[k]} onChange={(e) => setParticles({ ...particles, [k]: e.target.value.trim() })} className="input min-h-0 py-2 font-mono text-xs" dir="ltr" maxLength={7} />
+              </span>
+            </label>
+          ))}
+        </div>
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          {([
+            ["opacity", ar ? "شفافية الجسيمات" : "Particle opacity"],
+            ["link_opacity", ar ? "شفافية خطوط الاتصال" : "Link opacity"],
+          ] as const).map(([k, label]) => (
+            <label key={k} className="block">
+              <span className="label flex items-center justify-between"><span>{label}</span><span className="font-mono text-xs text-muted" dir="ltr">{particles[k]}</span></span>
+              <input type="range" min={0} max={1} step={0.01} value={particles[k]} onChange={(e) => setParticles({ ...particles, [k]: Number(e.target.value) })} className="w-full accent-[var(--color-primary)]" dir="ltr" />
+            </label>
+          ))}
+        </div>
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+          <AmbientPreview colors={particles} dark={false} label={ar ? "الوضع النهاري" : "Light mode"} className="grid h-40 place-items-center rounded-xl border border-line bg-[#F7F9FD]" />
+          <AmbientPreview colors={particles} dark label={ar ? "الوضع الليلي" : "Dark mode"} className="grid h-40 place-items-center rounded-xl bg-[#070B1A]" />
+        </div>
+        <p className="text-xs text-muted">{ar ? "المعاينة أكثف من الموقع لتسهيل الحكم على الألوان. حرّك الماوس فوقها لتجربة التفاعل." : "The preview is denser than the site so colours are easy to judge. Hover to try the interaction."}</p>
       </div>
 
       {canRestorePalette && (
