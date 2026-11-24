@@ -102,6 +102,9 @@
 
 @layer base {
   html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; }
+  /* Guard: nothing decorative (glows, marquees, pre-reveal offsets) may widen the page on phones.
+     `clip` (not `hidden`) keeps position: sticky working. */
+  html, body { max-width: 100%; overflow-x: clip; }
   body {
     background: var(--color-bg);
     color: var(--color-fg);

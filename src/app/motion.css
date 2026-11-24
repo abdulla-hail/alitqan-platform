@@ -33,6 +33,11 @@ html.js[data-reveal="on"] [data-anim="end"]:not(.in-view) { transform: translate
 html.js[dir="rtl"][data-reveal="on"] [data-anim="start"]:not(.in-view) { transform: translate3d(calc(var(--motion-distance) * 1.6), 0, 0); }
 html.js[dir="rtl"][data-reveal="on"] [data-anim="end"]:not(.in-view) { transform: translate3d(calc(var(--motion-distance) * -1.6), 0, 0); }
 html.js[data-reveal="on"] [data-anim="scale"]:not(.in-view) { transform: scale(0.94); }
+/* Phones: sideways entrances would push not-yet-revealed elements past the screen edge
+   (the browser then zooms the whole page out on first load) — reveal upward instead. */
+@media (max-width: 767px) {
+  html.js[data-reveal="on"] :is([data-anim="start"], [data-anim="end"]):not(.in-view) { transform: translate3d(0, var(--motion-distance), 0); }
+}
 html.js[data-reveal="on"] [data-anim="clip"]:not(.in-view) { opacity: 1; clip-path: inset(0 0 100% 0); }
 html.js[data-reveal="on"] [data-anim="image"]:not(.in-view) { opacity: 1; clip-path: inset(7% 7% 7% 7% round var(--radius)); }
 html.js[data-reveal="on"] [data-anim="image"]:not(.in-view) img { transform: scale(1.12); }
