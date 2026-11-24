@@ -11,7 +11,7 @@
 - Translatable values are `{lang: text}` maps; the editor shows one tab per enabled language and flags missing translations; the site falls back to the default language.
 
 ## Brand system
-- Logo geometry lives in `lib/brand/logo-geometry.ts` (pure SVG paths) → used both by the live `<Logo>` component (coloured with tokens) and by `scripts/build-brand-assets.ts` (static asset pack).
+- The official mark lives in `lib/brand/mark.ts` (vector paths + gradients, colours via `--logo-*` CSS variables) → used by the live `<Logo>`/`<BrandMark>` components and by `scripts/build-brand-assets.ts` (package in `public/brand`). Uploaded SVGs pass `lib/svg-safety.ts` in the browser and on the server. See docs/BRAND.md.
 - Colours/fonts/radius are tokens (`--c-*`, `--f-*`, `--radius`) mapped into Tailwind's theme (`globals.css @theme inline`). Components never contain colour literals. Values are validated (hex / font-name regex) before being injected.
 - Light/dark/system: inline script applies the visitor's saved preference before paint; the toggle stores it in `localStorage` (a per-visitor preference only — no site data lives in the browser).
 

@@ -1,6 +1,7 @@
 "use client";
 import { getBrowserClient } from "@/lib/supabase/browser";
 import { publicEnv } from "@/lib/env";
+import { sanitizeSvg } from "@/lib/svg-safety";
 
 export const MEDIA_ACCEPT = "image/jpeg,image/png,image/webp,image/avif,image/gif,image/svg+xml,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,video/mp4,.woff2,.woff";
 export const MEDIA_MAX = 10 * 1024 * 1024;
@@ -57,7 +58,13 @@ function xhrUpload(path: string, blob: Blob, type: string, token: string, onProg
 export async function uploadToMedia(file: File, folder: string, onProgress?: (p: number) => void) {
   if (file.size > MEDIA_MAX) throw new Error("too_large");
   if (!TYPES.has(fileType(file))) throw new Error("type");
-  const opt = await optimiseImage(file);
+  let opt = await optimiseImage(file);
+  if (opt.type === "image/svg+xml") {
+    // never store executable SVG: clean it, and refuse anything that could run code or load external content
+    const check = sanitizeSvg(await file.text());
+    if (!check.ok) throw new Error("unsafe_svg");
+    opt = { ...opt, blob: new Blob([check.svg], { type: "image/svg+xml" }) };
+  }
   const safe = opt.name.normalize("NFKD").replace(/[^\w.-]+/g, "-").replace(/-+/g, "-").toLowerCase().slice(-80);
   const path = `${folder.replace(/[^\w-]/g, "") || "general"}/${new Date().toISOString().slice(0, 7)}/${crypto.randomUUID().slice(0, 8)}-${safe}`;
   const sb = getBrowserClient();

@@ -6,6 +6,8 @@ import { safeColor, safeFont } from "@/lib/brand/theme";
 import { refreshSite } from "./actions";
 import { safeUrl } from "./sanitize";
 import { sanitizeMotion } from "@/lib/motion";
+import { publicEnv } from "@/lib/env";
+import { sanitizeSvg } from "@/lib/svg-safety";
 
 type SB = Awaited<ReturnType<typeof createSessionClient>>;
 async function codes(sb: SB) {
@@ -59,6 +61,34 @@ export async function reorderNav(ids: string[]) {
 }
 
 /* ------------------------------------------------------------------ brand */
+const LOGO_COLOR_KEYS = ["dark", "deep", "primary", "bright", "mono"] as const;
+/** Whitelist the logo-system settings (colours must be hex; variants from fixed lists). */
+function cleanLogoSystem(v: unknown, prev: Record<string, unknown> | null | undefined) {
+  const o = (v && typeof v === "object" ? v : {}) as Record<string, unknown>;
+  const c = (o.colors && typeof o.colors === "object" ? o.colors : {}) as Record<string, unknown>;
+  const colors = Object.fromEntries(LOGO_COLOR_KEYS.flatMap((k) => (typeof c[k] === "string" && safeColor(c[k], "") ? [[k, String(c[k]).toUpperCase()]] : [])));
+  return {
+    colors,
+    on_light: ["color", "dark", "mono"].includes(String(o.on_light)) ? o.on_light : "color",
+    on_dark: ["light", "white", "color", "mono"].includes(String(o.on_dark)) ? o.on_dark : "light",
+    show_name: Boolean(o.show_name),
+    // server-owned: never taken from the client
+    ...(prev?.previous_colors ? { previous_colors: prev.previous_colors } : {}),
+  };
+}
+
+/** Uploaded SVG logos must come from our own storage (or /brand) and pass the sanitiser again on the server. */
+async function assertSafeSvgUrl(url: string | null, field: string) {
+  if (!url || !/\.svg(\?|#|$)/i.test(url)) return;
+  if (/^\/brand\/[\w.-]+\.svg$/.test(url)) return;
+  const own = publicEnv.supabaseUrl && url.startsWith(`${publicEnv.supabaseUrl}/storage/v1/object/public/`);
+  if (!own) throw new Error(`invalid input: ${field} (SVG must be uploaded to the media library)`);
+  const res = await fetch(url, { cache: "no-store", signal: AbortSignal.timeout(8000) });
+  if (!res.ok) throw new Error(`invalid input: ${field} (file not reachable)`);
+  const check = sanitizeSvg(await res.text());
+  if (!check.ok) throw new Error(`invalid input: ${field} (unsafe SVG: ${check.reason})`);
+}
+
 export async function saveBrand(input: Record<string, unknown>) {
   return guarded("brand.manage", async () => {
     const sb = await createSessionClient();
@@ -67,13 +97,14 @@ export async function saveBrand(input: Record<string, unknown>) {
       const o = (p && typeof p === "object" ? p : {}) as Record<string, unknown>;
       return Object.fromEntries(["primary", "secondary", "accent", "background", "surface", "foreground", "muted", "border"].map((k) => [k, safeColor(o[k], fb[k])]));
     };
-    const { data: cur } = await sb.from("brand_settings").select("colors").eq("id", 1).single();
+    const { data: cur } = await sb.from("brand_settings").select("colors, logo_system").eq("id", 1).single();
     const colors = (input.colors ?? {}) as Record<string, unknown>;
     const row = {
       name: loc(input.name, langs, 80),
       tagline: loc(input.tagline, langs, 200),
       description: loc(input.description, langs, 400),
-      logo_mode: ["builtin", "symbol_text", "uploaded"].includes(String(input.logo_mode)) ? input.logo_mode : "builtin",
+      logo_mode: ["mark", "symbol_text", "uploaded"].includes(String(input.logo_mode)) ? input.logo_mode : "mark",
+      logo_system: cleanLogoSystem(input.logo_system, cur?.logo_system as Record<string, unknown> | null),
       logo_url: safeUrl(input.logo_url, "logo_url"),
       logo_dark_url: safeUrl(input.logo_dark_url, "logo_dark_url"),
       logo_alt_url: safeUrl(input.logo_alt_url, "logo_alt_url"),
@@ -86,6 +117,7 @@ export async function saveBrand(input: Record<string, unknown>) {
       backgrounds: { pattern: (input.backgrounds as Record<string, unknown> | undefined)?.pattern === "none" ? "none" : "measure" },
     };
     if (row.logo_mode === "uploaded" && !row.logo_url) throw new Error("invalid input: logo_url required");
+    for (const f of ["logo_url", "logo_dark_url", "logo_alt_url", "symbol_url", "favicon_url", "og_image_url"] as const) await assertSafeSvgUrl(row[f] ?? null, f);
     const { error } = await sb.from("brand_settings").update(row).eq("id", 1);
     if (error) throw new Error(error.message);
     await refreshSite();

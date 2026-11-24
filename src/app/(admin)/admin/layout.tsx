@@ -12,7 +12,7 @@ import { createPublicClient } from "@/lib/supabase/clients";
 import type { BrandSettings } from "@/types/content";
 
 export const dynamic = "force-dynamic";
-export const metadata: Metadata = { title: "CMS", robots: { index: false, follow: false }, icons: { icon: "/icon.svg" } };
+export const metadata: Metadata = { title: "CMS", robots: { index: false, follow: false }, icons: { icon: [{ url: "/brand/favicon.svg", type: "image/svg+xml" }, { url: "/brand/favicon-32.png", sizes: "32x32" }], apple: "/brand/apple-touch-icon.png" } };
 export const viewport: Viewport = { viewportFit: "cover" };
 
 export default async function AdminRootLayout({ children }: { children: React.ReactNode }) {

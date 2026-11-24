@@ -214,12 +214,12 @@ export const brand = {
   name: t("إتقان", "ALITQAN"),
   tagline: t("نُتقن التفاصيل لتكبر أعمالك", "Precision that grows your business"),
   description: t("شركة خدمات رقمية وتقنية وإبداعية", "A digital, technology and creative studio"),
-  logo_mode: "builtin",
+  logo_mode: "mark",
   default_theme: "system",
   radius: "14px",
   colors: {
-    light: { primary: "#0B5D50", secondary: "#16324F", accent: "#C9963B", background: "#FAF8F4", surface: "#FFFFFF", foreground: "#0E1A1F", muted: "#5B6B70", border: "#E6E1D8" },
-    dark: { primary: "#3CC7A8", secondary: "#9DB8D9", accent: "#E2B565", background: "#0B1215", surface: "#121C20", foreground: "#ECE9E2", muted: "#93A3A8", border: "#22313A" },
+    light: { primary: "#0756D8", secondary: "#022A7C", accent: "#00B4EE", background: "#F7F9FD", surface: "#FFFFFF", foreground: "#0A1433", muted: "#56627A", border: "#E0E6F1" },
+    dark: { primary: "#4D94FF", secondary: "#8DB2FF", accent: "#2BD4FF", background: "#070B1A", surface: "#0E1430", foreground: "#E9EEFA", muted: "#96A1BE", border: "#1F2A4A" },
   },
   fonts: { display_ar: "Alexandria", body_ar: "IBM Plex Sans Arabic", display_en: "Sora", body_en: "Inter" },
 };

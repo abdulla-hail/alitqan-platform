@@ -31,7 +31,7 @@ function Sidebar({ mini, groups, activeHref, can }: { mini: boolean; groups: { t
   return (
     <nav className="flex h-full flex-col" aria-label="Admin">
       <div className={`flex h-16 flex-none items-center gap-2.5 border-b border-line ${mini ? "justify-center px-2" : "px-5"}`}>
-        <BrandSymbol className="h-8 w-8 flex-none" />
+        <BrandSymbol className="h-10 w-10 flex-none" />
         {!mini && <span className="font-display text-lg font-bold">CMS</span>}
       </div>
       <div ref={list} className="relative flex-1 space-y-5 overflow-y-auto overflow-x-hidden px-3 py-4">

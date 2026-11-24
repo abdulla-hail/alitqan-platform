@@ -26,7 +26,7 @@ export function useMediaUploader(folder: string) {
           if (res.ok && res.data) { out.push(res.data); set(i, { p: 1, state: "done" }); }
           else { set(i, { state: "error", error: d.error_generic }); toast(d.error_generic, "error"); }
         } catch (e) {
-          const msg = e instanceof Error && e.message === "too_large" ? "> 10MB" : e instanceof Error && e.message === "type" ? d.type : d.error_generic;
+          const msg = e instanceof Error && e.message === "too_large" ? "> 10MB" : e instanceof Error && e.message === "type" ? d.type : e instanceof Error && e.message === "unsafe_svg" ? d.unsafe_svg : d.error_generic;
           set(i, { state: "error", error: msg });
           toast(`${f.name}: ${msg}`, "error");
         }

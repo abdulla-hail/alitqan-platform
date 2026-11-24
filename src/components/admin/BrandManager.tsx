@@ -1,12 +1,12 @@
 "use client";
-import { AlertTriangle, Download } from "lucide-react";
+import { AlertTriangle } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
-import { Logo } from "@/components/brand/Logo";
 import { saveBrand } from "@/features/admin/system-actions";
 import { contrastRatio } from "@/lib/brand/theme";
 import type { BrandSettings, Palette } from "@/types/content";
 import { FieldEditor } from "./FieldEditor";
+import { LogoIdentityPanel } from "./LogoIdentityPanel";
 import { PageTitle, SubmitButton, Tabs, useAdmin, useResult } from "./ui";
 
 const KEYS: (keyof Palette)[] = ["primary", "secondary", "accent", "background", "surface", "foreground", "muted", "border"];
@@ -51,40 +51,7 @@ export function BrandManager({ brand }: { brand: BrandSettings }) {
         <FieldEditor field={{ name: "description", kind: "textarea", localized: true, label: { ar: "تعريف العلامة", en: "Brand description" } }} value={b.description} onChange={(v) => set("description", v as never)} />
       </section>
 
-      <section className="card space-y-5 p-6">
-        <h2 className="text-lg font-bold">{ar ? "الشعارات" : "Logos"}</h2>
-        <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
-          {([
-            ["builtin", ar ? "شعار إتقان الأصلي (SVG)" : "Original ALITQAN mark (SVG)"],
-            ["symbol_text", ar ? "الرمز + اسم العلامة كنص" : "Symbol + brand name as text"],
-            ["uploaded", ar ? "شعار مرفوع" : "Uploaded logo"],
-          ] as const).map(([v, label]) => (
-            <label key={v} className="flex cursor-pointer items-center gap-2 rounded-lg border border-line p-3 has-[:checked]:border-primary has-[:checked]:bg-soft">
-              <input type="radio" name="logo_mode" checked={b.logo_mode === v} onChange={() => set("logo_mode", v)} />
-              <span className="text-sm font-medium">{label}</span>
-            </label>
-          ))}
-        </div>
-        <div className="flex flex-wrap items-center gap-6 rounded-lg bg-subtle p-5">
-          <Logo brand={b} locale="ar" />
-          <Logo brand={b} locale="en" />
-        </div>
-        <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
-          <FieldEditor field={{ name: "logo_url", kind: "image", label: { ar: "الشعار الأساسي", en: "Primary logo" } }} value={b.logo_url} onChange={(v) => set("logo_url", v as string | null)} />
-          <FieldEditor field={{ name: "logo_dark_url", kind: "image", label: { ar: "الشعار للوضع الداكن", en: "Logo for dark mode" } }} value={b.logo_dark_url} onChange={(v) => set("logo_dark_url", v as string | null)} />
-          <FieldEditor field={{ name: "logo_alt_url", kind: "image", label: { ar: "الشعار البديل", en: "Alternate logo" } }} value={b.logo_alt_url} onChange={(v) => set("logo_alt_url", v as string | null)} />
-          <FieldEditor field={{ name: "symbol_url", kind: "image", label: { ar: "الرمز المستقل", en: "Standalone symbol" } }} value={b.symbol_url} onChange={(v) => set("symbol_url", v as string | null)} />
-          <FieldEditor field={{ name: "favicon_url", kind: "image", label: { ar: "أيقونة الموقع (Favicon)", en: "Favicon" } }} value={b.favicon_url} onChange={(v) => set("favicon_url", v as string | null)} />
-          <FieldEditor field={{ name: "og_image_url", kind: "image", label: { ar: "صورة المشاركة الافتراضية", en: "Default share image" } }} value={b.og_image_url} onChange={(v) => set("og_image_url", v as string | null)} />
-        </div>
-        <p className="flex items-center gap-2 text-sm text-muted">
-          <Download className="h-4 w-4" />
-          {ar ? "ملفات الهوية الأصلية (SVG):" : "Original identity files (SVG):"}{" "}
-          {["horizontal-color", "vertical-color", "symbol-color", "symbol-white", "arabic-black", "latin-black"].map((f) => (
-            <a key={f} href={`/brand/${f}.svg`} download className="font-mono text-xs text-primary underline" dir="ltr">{f}</a>
-          ))}
-        </p>
-      </section>
+      <LogoIdentityPanel b={b} set={set} ar={ar} />
 
       <section className="card space-y-5 p-6">
         <div className="flex flex-wrap items-center justify-between gap-3">

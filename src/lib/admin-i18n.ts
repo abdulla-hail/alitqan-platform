@@ -24,7 +24,7 @@ const ar = {
   welcome: "مرحباً", seo_title: "عنوان SEO", seo_description: "وصف SEO", seo_image: "صورة المشاركة", language: "اللغة",
   export_csv: "تصدير CSV", export_xlsx: "تصدير Excel", notes: "ملاحظات داخلية", add_note: "إضافة ملاحظة", followup: "تاريخ المتابعة",
   priority: "الأولوية", assigned: "المسؤول", attachments: "المرفقات", details: "التفاصيل", open: "فتح", copy: "نسخ", copied: "تم النسخ",
-  used_in: "مستخدم في", unused: "غير مستخدم", alt_text: "النص البديل", folder: "المجلد", size: "الحجم", type: "النوع",
+  used_in: "مستخدم في", unused: "غير مستخدم", alt_text: "النص البديل", folder: "المجلد", size: "الحجم", type: "النوع", unsafe_svg: "ملف SVG مرفوض: يحتوي على أكواد أو روابط خارجية غير آمنة",
   interface_language: "لغة الواجهة", theme: "المظهر", sample_content: "المحتوى التجريبي", total: "الإجمالي", new_items: "جديد",
   recent_activity: "آخر الأنشطة", quick_links: "روابط سريعة", content_stats: "إحصائيات المحتوى", denied: "ليست لديك صلاحية لفتح تلك الصفحة.",
 };
@@ -51,7 +51,7 @@ const en: AdminDict = {
   welcome: "Welcome", seo_title: "SEO title", seo_description: "SEO description", seo_image: "Share image", language: "Language",
   export_csv: "Export CSV", export_xlsx: "Export Excel", notes: "Internal notes", add_note: "Add note", followup: "Follow-up date",
   priority: "Priority", assigned: "Assignee", attachments: "Attachments", details: "Details", open: "Open", copy: "Copy", copied: "Copied",
-  used_in: "Used in", unused: "Unused", alt_text: "Alt text", folder: "Folder", size: "Size", type: "Type",
+  used_in: "Used in", unused: "Unused", alt_text: "Alt text", folder: "Folder", size: "Size", type: "Type", unsafe_svg: "SVG rejected: it contains scripts or external references",
   interface_language: "Interface language", theme: "Theme", sample_content: "Sample content", total: "Total", new_items: "New",
   recent_activity: "Recent activity", quick_links: "Quick links", content_stats: "Content stats", denied: "You don't have access to that page.",
 };

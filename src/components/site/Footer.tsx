@@ -35,7 +35,7 @@ export function Footer({ ctx }: { ctx: SiteContext }) {
 
             <div className="grid grid-cols-1 gap-10 py-12 sm:grid-cols-2 lg:grid-cols-12">
               <div className="lg:col-span-4">
-                <Logo brand={brand} locale={locale} />
+                <Logo brand={brand} locale={locale} size="lg" surface="dark" />
                 <p className="mt-5 max-w-sm leading-relaxed text-muted">{P(brand?.tagline)}</p>
                 {social.length > 0 && (
                   <ul className="mt-6 flex flex-wrap gap-2">

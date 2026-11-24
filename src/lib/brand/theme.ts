@@ -1,12 +1,13 @@
 import type { BrandSettings, Palette } from "@/types/content";
+import { MARK_DEFAULT_COLORS, MARK_DEFAULT_MONO } from "./mark";
 import { customFontFaces, FONT_CATALOG, googleFontsHref as gfHref, resolveTypography, safeFamily, type CustomFont } from "./fonts";
 
 const HEX = /^#(?:[0-9a-fA-F]{3}|[0-9a-fA-F]{6}|[0-9a-fA-F]{8})$/;
 const RADIUS = /^\d{1,2}(\.\d+)?(px|rem)$/;
 
 export const FALLBACK_PALETTES: { light: Palette; dark: Palette } = {
-  light: { primary: "#0B5D50", secondary: "#16324F", accent: "#C9963B", background: "#FAF8F4", surface: "#FFFFFF", foreground: "#0E1A1F", muted: "#5B6B70", border: "#E6E1D8" },
-  dark: { primary: "#3CC7A8", secondary: "#9DB8D9", accent: "#E2B565", background: "#0B1215", surface: "#121C20", foreground: "#ECE9E2", muted: "#93A3A8", border: "#22313A" },
+  light: { primary: "#0756D8", secondary: "#022A7C", accent: "#00B4EE", background: "#F7F9FD", surface: "#FFFFFF", foreground: "#0A1433", muted: "#56627A", border: "#E0E6F1" },
+  dark: { primary: "#4D94FF", secondary: "#8DB2FF", accent: "#2BD4FF", background: "#070B1A", surface: "#0E1430", foreground: "#E9EEFA", muted: "#96A1BE", border: "#1F2A4A" },
 };
 
 /** Kept for compatibility: names of catalog fonts by script. */
@@ -96,6 +97,18 @@ export function googleFontsHref(families: string[]) {
 }
 
 /** Complete CSS injected in <head>: design tokens for light + dark, fonts, custom @font-face. */
+/** CSS variables read by the inline vector mark (and logo.svg) — editable in CMS → Brand identity. */
+export function logoVars(brand: BrandSettings | null) {
+  const c = brand?.logo_system?.colors ?? {};
+  return [
+    `--logo-dark:${safeColor(c.dark, MARK_DEFAULT_COLORS.dark)}`,
+    `--logo-deep:${safeColor(c.deep, MARK_DEFAULT_COLORS.deep)}`,
+    `--logo-primary:${safeColor(c.primary, MARK_DEFAULT_COLORS.primary)}`,
+    `--logo-bright:${safeColor(c.bright, MARK_DEFAULT_COLORS.bright)}`,
+    `--logo-mono:${safeColor(c.mono, MARK_DEFAULT_MONO)}`,
+  ].join(";");
+}
+
 export function brandCss(brand: BrandSettings | null, dir: "rtl" | "ltr", opts: { scope?: "site" | "admin"; customFonts?: CustomFont[] } = {}) {
   const fonts = fontStacks(brand, dir, opts.scope);
   const radius = brand && RADIUS.test(brand.radius) ? brand.radius : "14px";
@@ -105,5 +118,5 @@ export function brandCss(brand: BrandSettings | null, dir: "rtl" | "ltr", opts: 
   const faces = customFontFaces(opts.customFonts ?? [], fonts.families);
   const inkPrimary = safeColor(brand?.colors?.dark?.primary, FALLBACK_PALETTES.dark.primary);
   const ink = `--c-ink-primary:${inkPrimary};--c-ink-on-primary:${onColor(inkPrimary)}`;
-  return `${faces}:root{${light};${ink};--radius:${radius};--f-display:${fonts.display};--f-body:${fonts.body}}[data-theme="dark"]{${dark}}${pattern}`;
+  return `${faces}:root{${light};${ink};${logoVars(brand)};--radius:${radius};--f-display:${fonts.display};--f-body:${fonts.body}}[data-theme="dark"]{${dark}}${pattern}`;
 }

@@ -24,11 +24,24 @@ export interface Palette {
   border: string;
 }
 
+export interface LogoSystem {
+  colors?: Partial<{ dark: string; deep: string; primary: string; bright: string; mono: string }>;
+  /** variant used on light surfaces */
+  on_light?: "color" | "dark" | "mono";
+  /** variant used on dark surfaces (dark theme, ink sections) */
+  on_dark?: "light" | "white" | "color" | "mono";
+  /** show the brand name as text beside the mark */
+  show_name?: boolean;
+  previous_colors?: unknown;
+}
+
 export interface BrandSettings {
   name: Localized;
   tagline: Localized;
   description: Localized;
-  logo_mode: "builtin" | "symbol_text" | "uploaded";
+  logo_mode: "mark" | "builtin" | "symbol_text" | "uploaded";
+  /** official vector mark settings (colours, variant per background) — see lib/brand/mark.ts */
+  logo_system?: LogoSystem | null;
   logo_url: string | null;
   logo_dark_url: string | null;
   logo_alt_url: string | null;

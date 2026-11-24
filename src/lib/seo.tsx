@@ -34,7 +34,7 @@ export function buildMetadata(
     (opts.description ? pick(opts.description as Localized, locale, defaultLocale) : "") ||
     pick(seoCfg.default_description, locale, defaultLocale) ||
     pick(brand?.description, locale, defaultLocale);
-  const image = absolute(base, override?.image || opts.image || brand?.og_image_url || "/brand/horizontal-color.svg");
+  const image = absolute(base, override?.image || opts.image || brand?.og_image_url || "/brand/og-default.png");
   const path = opts.path ? `/${opts.path.replace(/^\//, "")}` : "";
   const languages: Record<string, string> = {};
   for (const l of ctx.languages) languages[l.code] = `${base}/${l.code}${path}`;
@@ -56,7 +56,10 @@ export function buildMetadata(
       ...(opts.publishedTime ? { publishedTime: opts.publishedTime } : {}),
     },
     twitter: { card: "summary_large_image", title, description, images: image ? [image] : undefined, site: seoCfg.twitter_handle || undefined },
-    icons: { icon: brand?.favicon_url || "/icon.svg" },
+    icons: brand?.favicon_url
+      ? { icon: brand.favicon_url, apple: "/brand/apple-touch-icon.png" }
+      : { icon: [{ url: "/brand/favicon.svg", type: "image/svg+xml" }, { url: "/brand/favicon-32.png", sizes: "32x32", type: "image/png" }], apple: "/brand/apple-touch-icon.png" },
+    manifest: "/manifest.webmanifest",
     verification: seoCfg.google_verification ? { google: seoCfg.google_verification } : undefined,
     robots: opts.noindex ? { index: false, follow: true } : undefined,
   };
@@ -72,7 +75,7 @@ export function organizationJsonLd(ctx: SiteContext) {
     name: pick(ctx.brand?.name, ctx.locale, ctx.defaultLocale),
     alternateName: ctx.languages.map((l) => pick(ctx.brand?.name, l.code)).filter(Boolean),
     url: `${base}/${ctx.locale}`,
-    logo: `${base}/brand/symbol-color.svg`,
+    logo: `${base}/brand/logo.png`,
     email: c.email || undefined,
     telephone: c.phones?.[0] || undefined,
     sameAs: social,

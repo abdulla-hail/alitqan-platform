@@ -13,13 +13,13 @@
 
 :root {
   /* deep brand ink: primary hue pushed toward near-black; stays dark in both themes */
-  --c-ink: color-mix(in oklab, var(--c-primary) 20%, #050c0e);
-  --c-on-ink: #f4f1ea;
-  --c-ink-primary: #3cc7a8; /* overridden from the CMS dark palette in brandCss */
-  --c-ink-on-primary: #06201b;
+  --c-ink: color-mix(in oklab, var(--c-primary) 20%, #030818);
+  --c-on-ink: #eef2fb;
+  --c-ink-primary: #4d94ff; /* overridden from the CMS dark palette in brandCss */
+  --c-ink-on-primary: #030c22;
 }
 [data-theme="dark"] {
-  --c-ink: color-mix(in oklab, var(--c-primary) 12%, #101b1f);
+  --c-ink: color-mix(in oklab, var(--c-primary) 12%, #0a1124);
 }
 
 /* The ink stage re-maps the design tokens, so any component placed inside

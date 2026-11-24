@@ -32,7 +32,7 @@ Then open `/admin/setup` (with `SETUP_TOKEN` set) to create the owner account.
 | `npm run db:seed` | Apply `database/seed/seed.sql` (idempotent) |
 | `npm run create-owner -- --email you@x.com --name "Name"` | CLI alternative to `/admin/setup` |
 | `node database/seed/build-seed.ts` | Regenerate `seed.sql` from `seed-data.ts` |
-| `node scripts/build-brand-assets.ts` | Regenerate the SVG logo pack in `public/brand/` |
+| `node scripts/build-brand-assets.ts` | Regenerate the logo package (SVG/PNG/PWA icons) in `public/brand/` |
 
 ## Documentation
 - [docs/SETUP.md](docs/SETUP.md) — Supabase, local environment, owner account, running
@@ -57,5 +57,5 @@ src/
 database/migrations       SQL migrations (schema, RLS, storage)
 database/seed             seed data (TypeScript) → seed.sql
 database/tests            PGlite RLS test-suite
-public/brand              logo pack (SVG)   public/demo  generated demo artwork
+public/brand              official logo package (SVG/PNG/icons)   public/demo  generated demo artwork
 ```

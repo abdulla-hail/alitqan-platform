@@ -1,66 +1,81 @@
 # إتقان · ALITQAN — Brand Identity
 
-## 1. Reading the name
-**إتقان** means doing a thing *precisely and completely*, to the standard of a master. In classical Arabic calligraphy, mastery is literally *measured*: every letter's proportions are set in **rhombic dots (نقطة)** made by the pen nib. The dot is the unit of precision. That is the core idea of the identity: **the measure behind the craft**.
+## 1. The official mark (2026-11)
+The official logo is the mark supplied by the owner (`brand-source/logo-reference.webp`): a sharp **A** whose crossbar is a sweeping **orbit**, with five **pixels** rising to the upper right — precision (the A) in motion (the orbit) building digital products (the pixels).
 
-## 2. Three explored directions
-| | Direction | Idea | Why not / why |
-|---|---|---|---|
-| A | **The Measure (المقياس)** ✅ | The bowl of **ن** (the last letter of إتقان) holding the calligrapher's rhombus dot. Wordmarks are drawn as monoline geometric strokes; every dot, the hamza, and the Latin "A" crossbars are the same rhombus. | **Chosen.** Born from the name itself, ownable, works at 16 px, connects Arabic heritage with engineered precision. |
-| B | Strata | Stacked hairline layers that converge into a solid block — "layer by layer to perfection". | Strong for an agency, but abstract and close to many "stack" marks in tech. |
-| C | Square Kufic seal | The word إتقان built on a square grid as a seal/stamp. | Beautiful but heavy; illegible at small sizes and reads traditional rather than future-facing. |
+The mark is used **on its own**. No name, slogan or text is ever added to the symbol itself. Where the brand name must appear, it is set beside the mark as live text (CMS option "Show brand name next to the mark").
 
-## 3. Logo system (direction A)
-All files are pure SVG paths (no fonts), generated from `src/lib/brand/logo-geometry.ts` by `node scripts/build-brand-assets.ts` into `public/brand/`.
+### Vector master
+`src/lib/brand/mark.ts` is the single source of truth: a hand-traced **vector redraw** of the reference. It uses real SVG paths and gradients, with no embedded bitmap. Coordinates are kept in the reference image's pixel space, so it can be compared 1:1 with the artwork (`node scripts/brand-compare.ts out.png`).
+
+| Shape | Path name |
+|---|---|
+| Front (left) leg with rounded apex | `legLeft` |
+| Back leg, above / below the orbit | `legRightUpper`, `legRightLower` |
+| Fold highlight | `legEdge` |
+| Orbit + inner shading + trailing stroke | `orbit`, `orbitShade`, `tail` |
+| Five pixels | `squares` (x, y, w, h, radius, tone) |
+
+## 2. Logo package — `public/brand/`
+Generated from the master by `node scripts/build-brand-assets.ts` (re-run after changing shapes or default colours).
 
 | File | Use |
 |---|---|
-| `symbol-*.svg` | Independent symbol: app icon, favicon, social avatar, watermark |
-| `arabic-*.svg` | Arabic wordmark إتقان |
-| `latin-*.svg` | Latin wordmark ALITQAN |
-| `horizontal-*.svg` | Primary lockup (header, documents) |
-| `vertical-*.svg` | Stacked lockup (cover pages, square formats) |
-| `icon.svg` | Favicon on brand tile |
+| `logo.svg` | **Official** full-colour mark. Colours read CSS variables (`--logo-*`) with the defaults as fallback |
+| `logo-monochrome.svg` | One colour (`--logo-mono`, default `#0B2A7A`) — stamps, embossing, single-ink print |
+| `logo-white.svg` | White — photos, brand-blue and dark backgrounds |
+| `logo-dark.svg` | Tonal navy — quiet use on light backgrounds |
+| `logo-light.svg` | Full colour lifted for dark backgrounds (what the site uses in dark mode) |
+| `logo-icon.svg` | Mark in a square, optically centred box (avatars, square slots) |
+| `favicon.svg` | Browser icon (tight padding so it reads at 16 px) |
+| `app-icon.svg` | Mark on a white rounded tile |
+| `logo.png`, `logo-white.png` | Transparent PNG, 2048 px wide |
+| `logo-preview.png` | Preview sheet of every variant on its intended background |
+| `icon-192.png`, `icon-512.png`, `icon-maskable-512.png` | PWA icons (maskable keeps the mark inside the 80 % safe zone) |
+| `apple-touch-icon.png`, `favicon-32.png` | iOS home screen / legacy favicon |
+| `badge-96.png` | Monochrome notification badge |
+| `og-default.png` | Default social share image (1200 × 630) |
 
-Variants: `color` (light backgrounds), `color-dark` (dark backgrounds), `black`, `white` (single colour).
+One-colour versions open a hairline gap between the two legs so the fold of the A stays readable without gradients.
 
-**On the website** the logo is rendered live from the same geometry, coloured by CSS variables, so changing brand colours in the CMS recolours the logo. If the brand name changes, switch *Brand Identity → Logo mode* to "Symbol + name text" or upload a new logo.
+## 3. Colour roles of the mark
+| Variable | Default | Role |
+|---|---|---|
+| `--logo-dark` | `#020C4A` | Deepest navy — shadows, lower legs |
+| `--logo-deep` | `#022A7C` | Secondary gradient — back leg, pixel shading |
+| `--logo-primary` | `#0563EA` | Main blue |
+| `--logo-bright` | `#00C8FD` | Cyan highlight |
+| `--logo-mono` | `#0B2A7A` | One-colour version |
 
-### Rules
-- Clear space: at least the height of the rhombus dot × 2 on all sides.
-- Minimum size: symbol 16 px; horizontal lockup 96 px wide.
-- Never rotate, stretch, outline, add shadows, or recolour the dot and bowl in the same colour on brand-coloured backgrounds (use the single-colour variant instead).
-- The dot may be used alone as a bullet, divider, or loading indicator.
+**Changing colours without code:** CMS → *Brand identity* → **Visual identity settings** → *Logo colours* → Save. The values are stored in `brand_settings.logo_system` and injected as the CSS variables above on every page. The inline logo, favicon and admin mark re-colour immediately. *Reset default colours* clears the overrides.
 
-## 4. Colour
-| Token | Light | Dark | Role |
-|---|---|---|---|
-| `primary` | `#0B5D50` Mastery Green | `#3CC7A8` | Brand, primary actions |
-| `secondary` | `#16324F` Ink Blue | `#9DB8D9` | Headings accents, secondary UI |
-| `accent` | `#C9963B` Gilded | `#E2B565` | The dot, highlights, focus details |
-| `background` | `#FAF8F4` Paper | `#0B1215` | Page |
-| `surface` | `#FFFFFF` | `#121C20` | Cards |
-| `foreground` | `#0E1A1F` Ink | `#ECE9E2` | Text |
-| `muted` | `#5B6B70` | `#93A3A8` | Secondary text |
-| `border` | `#E6E1D8` | `#22313A` | Hairlines |
+**In code / CSS:** override the variables anywhere, e.g. `.campaign { --logo-primary: #7C3AED; --logo-bright: #F472B6 }`.
 
-Every value is a CSS variable injected from the `brand_settings` table; components never contain colour literals.
+## 4. Which version appears where
+| Place | Version |
+|---|---|
+| Header (light theme) | CMS "Version on light backgrounds" (default: full colour) |
+| Header (dark theme) | CMS "Version on dark backgrounds" (default: lifted colour) |
+| Footer, auth side panel (dark ink surfaces) | Always the dark-background version |
+| Admin sidebar, login, loading, 404 | Square mark |
+| Favicon / PWA / Apple / share image | Files in `public/brand/` (or the CMS overrides) |
 
-## 5. Typography
-- Arabic display: **Alexandria** (geometric, matches the monoline marks). Arabic text: **IBM Plex Sans Arabic**.
-- Latin display: **Sora**. Latin text: **Inter**.
-All four are editable in the CMS (any Google Font family name).
+## 5. Replacing the logo
+- **New colours:** CMS, as above.
+- **Different logo file:** CMS → *Visual identity settings* → upload *Logo for light backgrounds* (and optionally *for dark backgrounds*), choose **Uploaded replacement logo**, Save. Uploaded logos are only ever rendered as `<img>`.
+- **SVG safety:** uploaded SVGs are cleaned (comments, metadata, XML declarations removed) and **refused** if they contain scripts, event handlers, `javascript:`/data URLs, `foreignObject`, animation `set`, or any external reference. This runs in the browser before upload, and again on the server when the logo is saved (`src/lib/svg-safety.ts`).
+- **Redrawing the official mark:** edit the paths in `src/lib/brand/mark.ts`, run `node scripts/brand-compare.ts check.png` to compare with the reference, then `node scripts/build-brand-assets.ts`.
 
-## 6. Patterns & elements
-- **Measure grid**: a faint dot grid (calligraphic measuring dots) used behind hero sections.
-- **Rhombus bullet** for lists, step markers, and section indices (01, 02 …).
-- **Hairline rules** (1 px, `border` token) separate content; no heavy boxes.
+## 6. Rules
+- Clear space: at least the height of the large pixel on every side.
+- Minimum size: 20 px tall on screen (favicon versions are tuned for 16 px).
+- Never stretch, rotate, outline, add shadows, re-arrange the pixels or add text into the mark.
+- On busy photos use `logo-white.svg`; on brand-blue backgrounds use white or mono-white.
 
-## 7. Iconography
-Lucide icons, 1.5 px stroke, rounded joins, always inside a 40 px soft tile tinted with `primary` at 10 %. No light-bulbs, gears or computer clip-art.
+## 7. Site colour
+The site palette lives in CMS → *Brand identity* → *Colours* (`brand_settings.colors`). Migration `0012` only switched the palette to the blue identity if it was still the untouched seed palette. The previous palette is kept in `logo_system.previous_colors` and can be restored from the CMS. The fallback blue palette is in `src/lib/brand/theme.ts`.
 
-## 8. Imagery
-Real work screenshots on device-less frames, macro shots of materials (paper, ink, stone), and generous negative space. Illustrations use only the brand geometry (arcs, rhombi, hairlines).
-
-## 9. Voice
-Calm, exact, confident. Short sentences. Promise outcomes, not adjectives.
+## 8. Typography, patterns, voice
+- Arabic display **Alexandria**, Arabic text **IBM Plex Sans Arabic**; Latin display **Sora**, Latin text **Inter**. All editable in CMS → Typography.
+- Faint measure grid behind heroes; hairline rules; Lucide icons in soft tiles.
+- Voice: calm, exact, confident. Short sentences. Promise outcomes, not adjectives.
