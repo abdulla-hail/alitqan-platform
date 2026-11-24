@@ -170,6 +170,25 @@ describe("0008 experience upgrade", () => {
     const r = await as("anon", `select family from custom_fonts order by family`);
     expect(r.rows.map((x) => x.family)).toEqual(["Brand Sans"]);
   });
+  it("hero effect: published is public, the draft is private, only settings managers write", async () => {
+    const vis = await as("anon", `select key from site_settings where key like 'hero_effect%' order by key`);
+    expect(vis.rows.map((x) => x.key)).toEqual(["hero_effect"]);
+    // editors lack settings.manage → RLS filters the update to zero rows; anon has no write grant
+    await expect(as("editor", `update site_settings set value='{"mode":"off"}' where key='hero_effect'`)).resolves.toMatchObject({ affectedRows: 0 });
+    await expect(as("anon", `update site_settings set value='{}' where key='hero_effect'`)).rejects.toThrow(/permission denied/);
+    // the owner can save a draft and publish; the draft stays invisible to visitors
+    await as("owner", `update site_settings set value='{"mode":"desktop"}' where key='hero_effect_draft'`);
+    await as("owner", `update site_settings set value='{"mode":"all"}' where key='hero_effect'`);
+    const ownerSees = await as("owner", `select key, value->>'mode' m from site_settings where key like 'hero_effect%' order by key`);
+    expect(ownerSees.rows).toEqual([{ key: "hero_effect", m: "all" }, { key: "hero_effect_draft", m: "desktop" }]);
+    const anonSees = await as("anon", `select value->>'mode' m from site_settings where key like 'hero_effect%'`);
+    expect(anonSees.rows).toEqual([{ m: "all" }]);
+  });
+  it("hero effect migration is insert-only (re-run keeps saved settings)", async () => {
+    await db.exec(readFileSync(join(root, "migrations", "0013_hero_effect.sql"), "utf8"));
+    const r = await db.query<{ m: string }>(`select value->>'mode' m from site_settings where key='hero_effect'`);
+    expect(r.rows[0].m).toBe("all");
+  });
   it("link target is constrained", async () => {
     await expect(db.query(`update projects set link_target='javascript' where slug='masar-logistics-system'`)).rejects.toThrow(/link_target/);
   });

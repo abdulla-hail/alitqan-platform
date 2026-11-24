@@ -11,6 +11,7 @@ import { SmartImage } from "@/components/ui/SmartImage";
 import { HeroArt } from "./HeroArt";
 import { ProjectsShowcase, type ShowcaseItem } from "./ProjectsShowcase";
 import { ServicesExplorer } from "./ServicesExplorer";
+import { HeroParticles } from "@/components/effects/HeroParticles";
 import { localeHref, pick } from "@/lib/i18n";
 import { prepareImage } from "@/lib/images";
 import {
@@ -78,14 +79,16 @@ async function Hero({ section, ctx }: { section: PageSection; ctx: SiteContext }
   const offsets = ["lg:translate-y-10", "lg:-translate-y-4", "lg:translate-y-16", "lg:translate-y-0"];
   return (
     <section className="px-2 pt-3 sm:px-4" data-section="hero">
-      <div className="panel-soft relative isolate overflow-hidden">
-        <div className="bg-measure bg-measure-fade pointer-events-none absolute inset-0 -z-10 opacity-60" data-parallax="slow" aria-hidden />
-        <div className="pointer-events-none absolute -top-40 start-[-10%] -z-10 h-[30rem] w-[30rem] rounded-full bg-primary/15 blur-3xl animate-glow" aria-hidden />
-        <div className="pointer-events-none absolute -bottom-40 end-[-10%] -z-10 h-[26rem] w-[26rem] rounded-full bg-accent/15 blur-3xl animate-glow [animation-delay:-4s]" aria-hidden />
+      <div className="panel-soft relative isolate overflow-hidden" data-hero-host>
+        <div className="hero-dotgrid bg-measure bg-measure-fade pointer-events-none absolute inset-0 -z-10 opacity-60" data-parallax="slow" aria-hidden />
+        <div className="hero-glow pointer-events-none absolute -top-40 start-[-10%] -z-10 h-[30rem] w-[30rem] rounded-full bg-primary/15 blur-3xl animate-glow" aria-hidden />
+        <div className="hero-glow pointer-events-none absolute -bottom-40 end-[-10%] -z-10 h-[26rem] w-[26rem] rounded-full bg-accent/15 blur-3xl animate-glow [animation-delay:-4s]" aria-hidden />
+        {/* interactive particle grid — settings: CMS → Hero effect (site_settings.hero_effect) */}
+        <HeroParticles settings={ctx.settings.hero_effect} />
 
         <div className="container-x flex flex-col items-center pb-10 pt-14 text-center sm:pt-20">
           {L("eyebrow") && <p className="badge-pill hero-in">{L("eyebrow")}</p>}
-          <h1 className="h-hero hero-in mt-7 max-w-5xl" style={{ ["--i" as string]: 1 }}>{L("title")}</h1>
+          <h1 className="h-hero hero-in mt-7 max-w-5xl" style={{ ["--i" as string]: 1 }} data-hero-title>{L("title")}</h1>
           {words.length > 0 && (
             <p className="hero-in mt-6 flex flex-wrap items-center justify-center gap-3 text-lg font-semibold sm:text-xl" style={{ ["--i" as string]: 2 }}>
               <span className="text-muted">{ctx.t("hero.specialized")}</span>

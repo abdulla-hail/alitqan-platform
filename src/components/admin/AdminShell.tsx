@@ -3,8 +3,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
   Activity, BookOpen, Building2, ChevronsLeft, ChevronsRight, ExternalLink, FileText, FolderKanban, GalleryHorizontalEnd, Gauge, Image as ImageIcon,
-  Inbox, Languages, LayoutGrid, ListTree, LogOut, Mail, Menu, MessageSquareQuote, Palette, Settings, Shield, Sparkles, Tags, Type, UserCircle, Users, UsersRound, X,
-} from "lucide-react";
+  Inbox, Languages, LayoutGrid, ListTree, LogOut, Mail, Menu, MessageSquareQuote, Palette, Settings, Shield, Sparkles, Tags, Type, UserCircle, Users, UsersRound, X, Orbit } from "lucide-react";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { AnimatePresence, m, useReducedMotion } from "motion/react";
 import { BrandSymbol } from "@/components/brand/Logo";
@@ -130,6 +129,7 @@ export function AdminShell({ children, user, counts }: { children: React.ReactNo
         { href: "/admin/brand", label: d.brand, icon: Palette, perm: "brand.manage" },
         { href: "/admin/typography", label: ar ? "إدارة الخطوط" : "Typography", icon: Type, perm: "brand.manage" },
         { href: "/admin/motion", label: ar ? "الحركة والتفاعل" : "Motion & interaction", icon: Sparkles, perm: "settings.manage" },
+        { href: "/admin/hero-effect", label: ar ? "تأثير القسم الرئيسي" : "Hero effect", icon: Orbit, perm: "settings.manage" },
         { href: "/admin/settings", label: d.settings, icon: Settings, perm: "settings.manage" },
         { href: "/admin/languages", label: d.languages, icon: Languages, perm: "languages.manage" },
         { href: "/admin/users", label: d.users, icon: Users, perm: "users.manage" },
