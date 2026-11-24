@@ -30,6 +30,8 @@ export interface LogoSystem {
   on_light?: "color" | "dark" | "mono";
   /** variant used on dark surfaces (dark theme, ink sections) */
   on_dark?: "light" | "white" | "color" | "mono";
+  /** logo when the visitor switches to dark mode: "original" (default, unchanged) or "variant" (the dark-background version) */
+  dark_mode_logo?: "original" | "variant";
   /** show the company name beside the mark in the header */
   show_name?: boolean;
   /** company name shown beside the mark in the header (falls back to the brand name) */
@@ -50,7 +52,8 @@ export interface BrandSettings {
   symbol_url: string | null;
   favicon_url: string | null;
   og_image_url: string | null;
-  colors: { light: Palette; dark: Palette };
+  /** dark_brand: "same" (default) keeps primary/secondary/accent identical in dark mode; "custom" uses the dark palette's own */
+  colors: { light: Palette; dark: Palette; dark_brand?: "same" | "custom" };
   fonts: import("@/lib/brand/fonts").Typography;
   radius: string;
   /** pattern: "measure" | "none"; particles: brand particle colours (lib/brand/particles.ts) */

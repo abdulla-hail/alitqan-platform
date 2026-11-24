@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { liftForDark, MARK_DEFAULT_COLORS, markDocument, markMarkup, mixHex } from "./brand/mark";
-import { brandCss, logoVars } from "./brand/theme";
+import { brandCss, contrastRatio, logoVars, readableOn } from "./brand/theme";
 import { sanitizeSvg } from "./svg-safety";
 
 describe("official mark", () => {
@@ -81,5 +81,33 @@ describe("global border radius", () => {
     expect(brandCss({ radius: "0px" } as never, "rtl")).toContain("--global-border-radius:0px");
     expect(brandCss({ radius: "22px" } as never, "ltr")).toContain("--global-border-radius:22px");
     expect(brandCss(null, "ltr")).toContain("--global-border-radius:14px");
+  });
+});
+
+describe("light/dark: brand colours stay fixed", () => {
+  const brand = {
+    colors: {
+      light: { primary: "#1D149F", secondary: "#16324F", accent: "#C9963B", background: "#FAF8F4", surface: "#FFFFFF", foreground: "#0E1A1F", muted: "#5B6B70", border: "#E6E1D8" },
+      dark: { primary: "#3CC7A8", secondary: "#9DB8D9", accent: "#E2B565", background: "#0B1215", surface: "#121C20", foreground: "#ECE9E2", muted: "#93A3A8", border: "#22313A" },
+    },
+  };
+  const darkBlock = (css: string) => css.slice(css.indexOf('[data-theme="dark"]{'));
+  it("dark mode keeps the light-mode primary/secondary/accent by default; only UI colours change", () => {
+    const d = darkBlock(brandCss(brand as never, "rtl"));
+    expect(d).toContain("--c-primary:#1D149F");
+    expect(d).toContain("--c-accent:#C9963B");
+    expect(d).not.toContain("#3CC7A8");
+    expect(d).toContain("--c-background:#0B1215");
+  });
+  it("brand-coloured text gets a readable variant on dark backgrounds (fills keep the exact colour)", () => {
+    const d = darkBlock(brandCss(brand as never, "rtl"));
+    const text = /--c-primary-text:(#[0-9A-F]{6})/i.exec(d)?.[1] ?? "";
+    expect(text).not.toBe("#1D149F");
+    expect(contrastRatio(text, "#0B1215")).toBeGreaterThanOrEqual(4.5);
+    expect(readableOn("#FFFFFF", "#0B1215")).toBe("#FFFFFF");
+  });
+  it("an explicit 'custom' choice uses the dark palette's own brand colours", () => {
+    const d = darkBlock(brandCss({ colors: { ...brand.colors, dark_brand: "custom" } } as never, "rtl"));
+    expect(d).toContain("--c-primary:#3CC7A8");
   });
 });

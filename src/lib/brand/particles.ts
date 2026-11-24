@@ -5,7 +5,7 @@
  * Defaults come from the official mark's blues.
  */
 import { mixHex } from "./mark";
-import { MESH_PATTERNS, PARTICLE_SHAPES, type MeshPattern, type ParticleShape } from "@/lib/hero-effect";
+import { DEFAULT_MIX, MESH_PATTERNS, PARTICLE_SHAPES, sanitizeMix, type MeshPattern, type ParticleShape } from "@/lib/hero-effect";
 
 export interface BrandParticles {
   particle: string;
@@ -19,14 +19,24 @@ export interface BrandParticles {
   size: number;
   /** how each particle is drawn */
   shape: ParticleShape;
+  /** shapes used when shape = "mixed" */
+  mix: Exclude<ParticleShape, "mixed">[];
   /** which figures the connecting lines form */
   pattern: MeshPattern;
+  /** density multiplier (1 = default spacing; 2 = twice as dense) */
+  density: number;
+  /** motion speed multiplier (0 = still drift, 1 = default) */
+  speed: number;
 }
 
-export const BRAND_PARTICLES_DEFAULTS: BrandParticles = { particle: "#0563EA", link: "#3D7BFF", glow: "#00C8FD", opacity: 0.35, link_opacity: 0.14, size: 1.15, shape: "circle", pattern: "triangles" };
+export const BRAND_PARTICLES_DEFAULTS: BrandParticles = { particle: "#0563EA", link: "#3D7BFF", glow: "#00C8FD", opacity: 0.35, link_opacity: 0.14, size: 1.15, shape: "circle", mix: [...DEFAULT_MIX], pattern: "triangles", density: 1, speed: 1 };
 
 const HEX = /^#(?:[0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/;
 const col = (v: unknown, fb: string) => (typeof v === "string" && HEX.test(v.trim()) ? v.trim().toUpperCase() : fb);
+const range = (v: unknown, min: number, max: number, fb: number) => {
+  const n = typeof v === "number" ? v : typeof v === "string" && v.trim() ? Number(v) : NaN;
+  return Number.isFinite(n) ? Math.round(Math.min(max, Math.max(min, n)) * 100) / 100 : fb;
+};
 const op = (v: unknown, fb: number) => {
   const n = typeof v === "number" ? v : Number(v);
   return Number.isFinite(n) ? Math.round(Math.min(1, Math.max(0, n)) * 100) / 100 : fb;
@@ -44,6 +54,9 @@ export function sanitizeBrandParticles(v: unknown): BrandParticles {
     size: (() => { const n = typeof o.size === "number" ? o.size : Number(o.size); return Number.isFinite(n) && o.size !== null && o.size !== "" ? Math.round(Math.min(4, Math.max(0.6, n)) * 100) / 100 : D.size; })(),
     shape: PARTICLE_SHAPES.includes(o.shape as ParticleShape) ? (o.shape as ParticleShape) : D.shape,
     pattern: MESH_PATTERNS.includes(o.pattern as MeshPattern) ? (o.pattern as MeshPattern) : D.pattern,
+    mix: sanitizeMix(o.mix),
+    density: range(o.density, 0.5, 2, D.density),
+    speed: range(o.speed, 0, 2.5, D.speed),
   };
 }
 
@@ -64,6 +77,9 @@ export function particlesForTheme(p: BrandParticles, dark: boolean): BrandPartic
     link_opacity: Math.round(p.link_opacity * 0.8 * 100) / 100,
     size: p.size,
     shape: p.shape,
+    mix: p.mix,
     pattern: p.pattern,
+    density: p.density,
+    speed: p.speed,
   };
 }

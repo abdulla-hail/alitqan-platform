@@ -32,23 +32,26 @@ const SHAPE_SCALE = 1.6;
 
 export function ambientSettings(brand: BrandParticles, dark: boolean, variant: AmbientVariant): HeroEffectSettings {
   const c = particlesForTheme(brand, dark);
-  const v = VARIANTS[variant];
+  const base = VARIANTS[variant];
+  // identity "density": tighter spacing when denser (sanitize keeps it ≥ 18 px)
+  const v = { ...base, spacing: Math.round(base.spacing / c.density) };
   return sanitizeHeroEffect({
     mode: "all",
     fallback: "static",
     particles: {
       shape: c.shape,
+      mix: c.mix,
       pattern: c.pattern,
       // angular shapes need a little more room than a dot to be recognisable
       size: c.shape === "circle" ? c.size : Math.round(c.size * SHAPE_SCALE * 100) / 100,
       opacity: c.opacity,
-      speed: v.speed,
+      speed: Math.round(v.speed * c.speed * 1000) / 1000,
       randomness: v.randomness,
       return_speed: 0.04,
       link_density: 1, // every neighbour linked → even mesh
       link_distance: Math.round(v.spacing * 2), // neighbour links (≈ spacing) always drawn, stretched ones fade
     },
-    interaction: { repulsion: true, force: 0.3, radius: 120, response: 0.08, release: 0.05, touch: false, click_wave: false, wave_strength: 0, wave_speed: 1 },
+    interaction: { repulsion: true, force: 0.3, radius: 120, response: 0.08, release: 0.05, touch: true, click_wave: false, wave_strength: 0, wave_speed: 1 },
     colors: { particle: c.particle, link: c.link, glow: c.glow, gradient: false, gradient_to: c.glow, intensity: 0, link_opacity: Math.min(0.5, c.link_opacity * LINK_BOOST), hover_glow: 0.1 },
     // uniform: same density in the middle and at the edges (no gaps / clusters)
     area: { ...HERO_EFFECT_DEFAULTS.area, height: 100, width: 100, position: "center", center_density: 1, edge_density: 1, text_clarity: 0.6, protect_padding: 18 }, // mesh softens behind the section heading

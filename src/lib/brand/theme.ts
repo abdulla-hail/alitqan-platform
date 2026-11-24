@@ -1,5 +1,5 @@
 import type { BrandSettings, Palette } from "@/types/content";
-import { MARK_DEFAULT_COLORS, MARK_DEFAULT_MONO } from "./mark";
+import { MARK_DEFAULT_COLORS, MARK_DEFAULT_MONO, mixHex } from "./mark";
 import { RADIUS_DEFAULT, radiusValue } from "./radius";
 import { customFontFaces, FONT_CATALOG, googleFontsHref as gfHref, resolveTypography, safeFamily, type CustomFont } from "./fonts";
 
@@ -42,8 +42,9 @@ export function onColor(bg: string) {
   return contrastRatio(bg, "#FFFFFF") >= contrastRatio(bg, "#0E1A1F") ? "#FFFFFF" : "#0E1A1F";
 }
 
-function paletteVars(p: Partial<Palette> | undefined, fb: Palette) {
-  const c = {
+/** Fills a palette from CMS input with safe fallbacks. */
+function resolvePalette(p: Partial<Palette> | undefined, fb: Palette): Palette {
+  return {
     primary: safeColor(p?.primary, fb.primary),
     secondary: safeColor(p?.secondary, fb.secondary),
     accent: safeColor(p?.accent, fb.accent),
@@ -53,8 +54,27 @@ function paletteVars(p: Partial<Palette> | undefined, fb: Palette) {
     muted: safeColor(p?.muted, fb.muted),
     border: safeColor(p?.border, fb.border),
   };
+}
+
+/**
+ * Same hue, adjusted only as much as needed for text to be readable on `bg` (WCAG ratio `target`).
+ * Used ONLY for brand-coloured text; fills, buttons and the logo keep the exact brand colour.
+ */
+export function readableOn(color: string, bg: string, target = 4.5): string {
+  if (contrastRatio(color, bg) >= target) return color;
+  const toward = luminance(bg) < 0.4 ? "#FFFFFF" : "#000000";
+  for (let w = 0.95; w >= 0.1; w -= 0.05) {
+    const c = mixHex(full(color), toward, w);
+    if (contrastRatio(c, bg) >= target) return c;
+  }
+  return toward;
+}
+const full = (h: string) => (h.length === 4 ? "#" + [...h.slice(1)].map((c) => c + c).join("") : h.slice(0, 7));
+
+function paletteVars(c: Palette, textBg = c.background, textTarget = 3) {
   return [
     `--c-primary:${c.primary}`,
+    `--c-primary-text:${readableOn(c.primary, textBg, textTarget)}`,
     `--c-on-primary:${onColor(c.primary)}`,
     `--c-secondary:${c.secondary}`,
     `--c-accent:${c.accent}`,
@@ -112,11 +132,19 @@ export function logoVars(brand: BrandSettings | null) {
 export function brandCss(brand: BrandSettings | null, dir: "rtl" | "ltr", opts: { scope?: "site" | "admin"; customFonts?: CustomFont[] } = {}) {
   const fonts = fontStacks(brand, dir, opts.scope);
   const radius = radiusValue(brand?.radius ?? RADIUS_DEFAULT); // → --global-border-radius
-  const light = paletteVars(brand?.colors?.light, FALLBACK_PALETTES.light);
-  const dark = paletteVars(brand?.colors?.dark, FALLBACK_PALETTES.dark);
+  // Brand colours (primary / secondary / accent) are the SAME in light and dark mode unless the admin
+  // explicitly chose "custom" for dark mode. Dark mode only swaps the interface colours
+  // (background, surface, text, muted text, borders).
+  const L = resolvePalette(brand?.colors?.light, FALLBACK_PALETTES.light);
+  const D0 = resolvePalette(brand?.colors?.dark, FALLBACK_PALETTES.dark);
+  const customDark = brand?.colors?.dark_brand === "custom";
+  const D = customDark ? D0 : { ...D0, primary: L.primary, secondary: L.secondary, accent: L.accent };
+  const light = paletteVars(L);
+  const dark = paletteVars(D, D.background, 4.5);
   const pattern = brand?.backgrounds?.pattern === "none" ? ".bg-measure{background-image:none!important}" : "";
   const faces = customFontFaces(opts.customFonts ?? [], fonts.families);
-  const inkPrimary = safeColor(brand?.colors?.dark?.primary, FALLBACK_PALETTES.dark.primary);
-  const ink = `--c-ink-primary:${inkPrimary};--c-ink-on-primary:${onColor(inkPrimary)}`;
+  // ink stages (footer, dark panels) keep the brand primary too; only its text use is made readable
+  const inkPrimary = customDark ? D0.primary : L.primary;
+  const ink = `--c-ink-primary:${inkPrimary};--c-ink-on-primary:${onColor(inkPrimary)};--c-ink-primary-text:${readableOn(inkPrimary, "#0B1022", 4.5)}`;
   return `${faces}:root{${light};${ink};${logoVars(brand)};--global-border-radius:${radius};--f-display:${fonts.display};--f-body:${fonts.body}}[data-theme="dark"]{${dark}}${pattern}`;
 }

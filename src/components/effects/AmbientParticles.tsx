@@ -21,12 +21,12 @@ export function AmbientParticles({ colors }: { colors: BrandParticles }) {
       const { ParticleEngine, FrameScheduler } = await import("@/lib/effects/particle-engine");
       if (cancelled) return;
       const root = document.documentElement;
-      const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches || root.dataset.motion === "off";
-      const nav = navigator as Navigator & { deviceMemory?: number };
-      const lowPower = window.innerWidth < 640 && ((nav.hardwareConcurrency ?? 8) <= 4 || (nav.deviceMemory ?? 8) <= 2);
-      const still = reduced || lowPower;
+      // Only the visitor's accessibility setting freezes the mesh. Phones keep moving: they get a
+      // 30 fps cap (battery) and the engine thins the lattice itself if frames get slow.
+      const still = matchMedia("(prefers-reduced-motion: reduce)").matches;
+      const phone = window.innerWidth < 768 || matchMedia("(pointer: coarse)").matches;
       const dark = () => root.getAttribute("data-theme") === "dark";
-      const scheduler = new FrameScheduler();
+      const scheduler = new FrameScheduler(phone ? 33 : 0);
       const brand = JSON.parse(key) as BrandParticles;
       const fields: { engine: InstanceType<typeof ParticleEngine>; variant: AmbientVariant }[] = [];
 

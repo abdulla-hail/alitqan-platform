@@ -2,13 +2,13 @@
 import { describe, expect, it } from "vitest";
 import { BRAND_PARTICLES_DEFAULTS, particlesForTheme, sanitizeBrandParticles } from "./brand/particles";
 import { ambientSettings } from "./effects/ambient";
-import { HERO_EFFECT_DEFAULTS, sanitizeHeroEffect, withBrandColors } from "./hero-effect";
+import { DEFAULT_MIX, HERO_EFFECT_DEFAULTS, MESH_PATTERNS, PARTICLE_SHAPES, sanitizeHeroEffect, sanitizeMix, withBrandColors } from "./hero-effect";
 
 describe("brand particle colours", () => {
   it("defaults to the identity blues and validates input", () => {
     expect(sanitizeBrandParticles(undefined)).toEqual(BRAND_PARTICLES_DEFAULTS);
     const p = sanitizeBrandParticles({ particle: "#abc", link: "red", glow: "#00FF88", opacity: 3, link_opacity: -1, extra: 1 });
-    expect(p).toEqual({ particle: "#ABC", link: BRAND_PARTICLES_DEFAULTS.link, glow: "#00FF88", opacity: 1, link_opacity: 0, size: 1.15, shape: "circle", pattern: "triangles" });
+    expect(p).toMatchObject({ particle: "#ABC", link: BRAND_PARTICLES_DEFAULTS.link, glow: "#00FF88", opacity: 1, link_opacity: 0, size: 1.15, shape: "circle", pattern: "triangles", density: 1, speed: 1 });
   });
   it("dark mode lifts the colours and lowers opacity (never brighter than light mode)", () => {
     const d = particlesForTheme(BRAND_PARTICLES_DEFAULTS, true);
@@ -72,11 +72,11 @@ describe("particle shapes & mesh patterns", () => {
     expect(HERO_EFFECT_DEFAULTS.particles.pattern).toBe("triangles");
     expect(sanitizeBrandParticles({}).shape).toBe("circle");
     expect(sanitizeBrandParticles({ shape: "<svg>", pattern: "spiral" })).toMatchObject({ shape: "circle", pattern: "triangles" });
-    expect(sanitizeHeroEffect({ particles: { shape: "star", pattern: "x" } }).particles).toMatchObject({ shape: "circle", pattern: "triangles" });
+    expect(sanitizeHeroEffect({ particles: { shape: "hexagram", pattern: "x" } }).particles).toMatchObject({ shape: "circle", pattern: "triangles" });
   });
   it("accept every offered option and pass them to the section mesh (both modes)", () => {
-    for (const shape of ["circle", "square", "triangle", "diamond", "hexagon", "mixed"] as const) {
-      for (const pattern of ["triangles", "squares", "hexagons"] as const) {
+    for (const shape of PARTICLE_SHAPES) {
+      for (const pattern of MESH_PATTERNS) {
         const bp = sanitizeBrandParticles({ shape, pattern });
         expect(bp).toMatchObject({ shape, pattern });
         for (const dark of [false, true]) expect(ambientSettings(bp, dark, 0).particles).toMatchObject({ shape, pattern });
@@ -96,5 +96,24 @@ describe("particle size", () => {
     const tri = ambientSettings(sanitizeBrandParticles({ size: 1.5, shape: "triangle" }), false, 0).particles.size;
     expect(dot).toBe(1.5);
     expect(tri).toBeGreaterThan(dot);
+  });
+});
+
+describe("shape mix, density and speed", () => {
+  it("mix keeps known shapes only (≥2), never 'mixed' itself", () => {
+    expect(sanitizeMix(["star", "ring", "star", "mixed", "evil"])).toEqual(["star", "ring"]);
+    expect(sanitizeMix(["star"])).toEqual(DEFAULT_MIX);
+    expect(sanitizeMix("x")).toEqual(DEFAULT_MIX);
+    expect(sanitizeHeroEffect({ particles: { mix: ["plus", "pentagon"] } }).particles.mix).toEqual(["plus", "pentagon"]);
+  });
+  it("identity density tightens spacing and speed scales the drift, both clamped", () => {
+    const base = ambientSettings(BRAND_PARTICLES_DEFAULTS, false, 0);
+    const dense = ambientSettings(sanitizeBrandParticles({ density: 2 }), false, 0);
+    expect(dense.devices.desktop.spacing).toBeLessThan(base.devices.desktop.spacing);
+    expect(ambientSettings(sanitizeBrandParticles({ speed: 0 }), false, 0).particles.speed).toBe(0);
+    expect(sanitizeBrandParticles({ density: 99, speed: -5 })).toMatchObject({ density: 2, speed: 0 });
+  });
+  it("section particles react to touch (phones)", () => {
+    expect(ambientSettings(BRAND_PARTICLES_DEFAULTS, false, 0).interaction.touch).toBe(true);
   });
 });

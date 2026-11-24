@@ -14,11 +14,19 @@ export type EffectMode = "all" | "desktop" | "off";
 export type Fallback = "static" | "glow" | "none";
 export type AreaPosition = "top" | "center" | "bottom";
 /** how each particle is drawn */
-export type ParticleShape = "circle" | "square" | "triangle" | "diamond" | "hexagon" | "mixed";
+export type ParticleShape = "circle" | "square" | "triangle" | "diamond" | "hexagon" | "pentagon" | "star" | "plus" | "ring" | "mixed";
 /** which figures the connecting lines form */
-export type MeshPattern = "triangles" | "squares" | "hexagons";
-export const PARTICLE_SHAPES: ParticleShape[] = ["circle", "square", "triangle", "diamond", "hexagon", "mixed"];
-export const MESH_PATTERNS: MeshPattern[] = ["triangles", "squares", "hexagons"];
+export type MeshPattern = "triangles" | "squares" | "hexagons" | "diamonds" | "polygons" | "mixed" | "constellation";
+export const PARTICLE_SHAPES: ParticleShape[] = ["circle", "square", "triangle", "diamond", "hexagon", "pentagon", "star", "plus", "ring", "mixed"];
+/** shapes that can take part in a "mixed" set */
+export const MIXABLE_SHAPES = PARTICLE_SHAPES.filter((s) => s !== "mixed") as Exclude<ParticleShape, "mixed">[];
+export const DEFAULT_MIX: Exclude<ParticleShape, "mixed">[] = ["circle", "square", "triangle", "diamond"];
+/** keeps only known, non-"mixed" shapes (unique); falls back to the default set */
+export function sanitizeMix(v: unknown): Exclude<ParticleShape, "mixed">[] {
+  const list = Array.isArray(v) ? [...new Set(v.filter((x): x is Exclude<ParticleShape, "mixed"> => MIXABLE_SHAPES.includes(x as never)))] : [];
+  return list.length >= 2 ? list : [...DEFAULT_MIX];
+}
+export const MESH_PATTERNS: MeshPattern[] = ["triangles", "squares", "hexagons", "diamonds", "polygons", "mixed", "constellation"];
 
 export interface DeviceProfile {
   /** grid spacing between particles (px) — smaller = denser */
@@ -38,6 +46,8 @@ export interface HeroEffectSettings {
   fallback: Fallback;
   particles: {
     shape: ParticleShape;
+    /** shapes used when shape = "mixed" */
+    mix: Exclude<ParticleShape, "mixed">[];
     pattern: MeshPattern;
     size: number; // px radius
     opacity: number; // 0–1
@@ -85,7 +95,7 @@ export interface HeroEffectSettings {
 export const HERO_EFFECT_DEFAULTS: HeroEffectSettings = {
   mode: "all",
   fallback: "static",
-  particles: { shape: "circle", pattern: "triangles", size: 1.6, opacity: 0.6, speed: 0.35, randomness: 0.12, return_speed: 0.05, link_density: 1, link_distance: 64 },
+  particles: { shape: "circle", mix: [...DEFAULT_MIX], pattern: "triangles", size: 1.6, opacity: 0.6, speed: 0.35, randomness: 0.12, return_speed: 0.05, link_density: 1, link_distance: 64 },
   interaction: { repulsion: true, force: 1, radius: 150, response: 0.18, release: 0.06, touch: true, click_wave: true, wave_strength: 1, wave_speed: 1 },
   colors: { source: "custom", particle: "#3D7BFF", link: "#2563EB", glow: "#00C8FD", gradient: true, gradient_to: "#00C8FD", intensity: 0.55, link_opacity: 0.22, hover_glow: 0.75 },
   area: { height: 100, width: 100, position: "center", center_density: 1, edge_density: 0.8, text_clarity: 0.8, protect_padding: 28 },
@@ -175,6 +185,7 @@ export function sanitizeHeroEffect(input: unknown): HeroEffectSettings {
     fallback: pickOne(o.fallback, ["static", "glow", "none"] as const, D.fallback),
     particles: {
       shape: pickOne(p.shape, PARTICLE_SHAPES, D.particles.shape),
+      mix: sanitizeMix(p.mix),
       pattern: pickOne(p.pattern, MESH_PATTERNS, D.particles.pattern),
       size: r("size", p.size, D.particles.size),
       opacity: r("opacity", p.opacity, D.particles.opacity),

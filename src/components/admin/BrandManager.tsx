@@ -11,6 +11,8 @@ import { RadiusControl } from "./RadiusControl";
 import { PageTitle, SubmitButton, Tabs, useAdmin, useResult } from "./ui";
 
 const KEYS: (keyof Palette)[] = ["primary", "secondary", "accent", "background", "surface", "foreground", "muted", "border"];
+/** brand colours — identical in both modes unless "custom dark brand colours" is chosen */
+const BRAND_KEYS: (keyof Palette)[] = ["primary", "secondary", "accent"];
 
 export function BrandManager({ brand }: { brand: BrandSettings }) {
   const { d, locale } = useAdmin();
@@ -21,7 +23,9 @@ export function BrandManager({ brand }: { brand: BrandSettings }) {
   const [mode, setMode] = useState<"light" | "dark">("light");
   const [busy, setBusy] = useState(false);
   const set = <K extends keyof BrandSettings>(k: K, v: BrandSettings[K]) => setB((cur) => ({ ...cur, [k]: v }));
-  const pal = b.colors[mode];
+  const customDark = b.colors.dark_brand === "custom";
+  // in dark mode (default) the preview uses the light palette's brand colours over the dark interface colours
+  const pal = mode === "dark" && !customDark ? { ...b.colors.dark, primary: b.colors.light.primary, secondary: b.colors.light.secondary, accent: b.colors.light.accent } : b.colors[mode];
   const warnings = useMemo(() => {
     const w: string[] = [];
     const ratio = (a: string, c: string) => contrastRatio(a, c);
@@ -60,7 +64,7 @@ export function BrandManager({ brand }: { brand: BrandSettings }) {
           <div className="w-56"><Tabs value={mode} onChange={(v) => setMode(v as "light" | "dark")} tabs={[{ value: "light", label: ar ? "الوضع الفاتح" : "Light" }, { value: "dark", label: ar ? "الوضع الداكن" : "Dark" }]} /></div>
         </div>
         <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
-          {KEYS.map((k) => (
+          {KEYS.filter((k) => !(mode === "dark" && !customDark && BRAND_KEYS.includes(k))).map((k) => (
             <label key={k} className="block">
               <span className="label capitalize">{k}</span>
               <span className="flex items-center gap-2">
@@ -70,6 +74,13 @@ export function BrandManager({ brand }: { brand: BrandSettings }) {
             </label>
           ))}
         </div>
+        {mode === "dark" && !customDark && (
+          <p className="rounded-lg bg-soft p-3 text-sm" data-dark-brand-note>
+            {ar
+              ? "ألوان الهوية (الأساسي، الثانوي، التمييز) ثابتة في الوضع الليلي ومأخوذة من الوضع النهاري. هنا تُعدَّل ألوان الواجهة فقط: الخلفية، البطاقات، النصوص، الحدود."
+              : "Brand colours (primary, secondary, accent) stay the same in dark mode, taken from light mode. Here you edit interface colours only: background, cards, text, borders."}
+          </p>
+        )}
         {warnings.length > 0 && (
           <ul className="space-y-1 rounded-lg bg-warning/12 p-3 text-sm text-warning">{warnings.map((w) => <li key={w} className="flex items-center gap-2"><AlertTriangle className="h-4 w-4" />{w}</li>)}</ul>
         )}
@@ -90,7 +101,7 @@ export function BrandManager({ brand }: { brand: BrandSettings }) {
       <RadiusControl value={b.radius} onChange={(v) => set("radius", v)} ar={ar} />
 
       <section className="card space-y-5 p-6">
-        <h2 className="text-lg font-bold">{ar ? "إعدادات الثيم" : "Theme settings"}</h2>
+        <h2 className="text-lg font-bold">{ar ? "إعدادات الثيم والوضع النهاري/الليلي" : "Theme & light/dark mode"}</h2>
         <p className="text-sm text-muted">
           {ar ? "الخطوط وأوزانها والخطوط المخصصة تُدار من صفحة " : "Fonts, weights and custom fonts are managed in "}
           <a href="/admin/typography" className="font-semibold text-primary underline">{ar ? "إدارة الخطوط" : "Typography settings"}</a>.
@@ -108,6 +119,20 @@ export function BrandManager({ brand }: { brand: BrandSettings }) {
             <select className="input" value={b.default_theme === "dark" ? "dark" : "light"} onChange={(e) => set("default_theme", e.target.value as BrandSettings["default_theme"])}>
               <option value="light">{ar ? "نهاري" : "Light"}</option>
               <option value="dark">{ar ? "ليلي" : "Dark"}</option>
+            </select>
+          </div>
+          <div>
+            <label className="label" htmlFor="dark-brand">{ar ? "ألوان الهوية في الوضع الليلي" : "Brand colours in dark mode"}</label>
+            <select id="dark-brand" className="input" value={customDark ? "custom" : "same"} onChange={(e) => set("colors", { ...b.colors, dark_brand: e.target.value as "same" | "custom" })}>
+              <option value="same">{ar ? "ثابتة كما في الوضع النهاري (موصى به)" : "Same as light mode (recommended)"}</option>
+              <option value="custom">{ar ? "ألوان مخصصة للوضع الليلي" : "Custom colours for dark mode"}</option>
+            </select>
+          </div>
+          <div>
+            <label className="label" htmlFor="dark-logo">{ar ? "الشعار عند تفعيل الوضع الليلي" : "Logo when dark mode is on"}</label>
+            <select id="dark-logo" className="input" value={b.logo_system?.dark_mode_logo === "variant" ? "variant" : "original"} onChange={(e) => set("logo_system", { ...(b.logo_system ?? {}), dark_mode_logo: e.target.value as "original" | "variant" })}>
+              <option value="original">{ar ? "الشعار الأصلي بألوانه (موصى به)" : "Original logo and colours (recommended)"}</option>
+              <option value="variant">{ar ? "نسخة الخلفيات الداكنة" : "Dark-background version"}</option>
             </select>
           </div>
         </div>

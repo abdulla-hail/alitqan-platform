@@ -4,11 +4,11 @@ import { Logo } from "@/components/brand/Logo";
 import { ThemeToggle } from "@/components/theme/ThemeToggle";
 import { LanguageSwitcher } from "./LanguageSwitcher";
 import { HeaderShell, MobileNav, NavLinks, type MegaData } from "./NavClient";
+import { SocialList } from "./SocialIcon";
 import { localeHref, pick } from "@/lib/i18n";
+import { socialFor } from "@/lib/social";
 import { getServiceCategories, getServices } from "@/services/content";
 import type { SiteContext } from "@/services/site";
-
-const SOCIAL_SHORT: Record<string, string> = { linkedin: "in", x: "X", instagram: "IG", behance: "Bē", dribbble: "Dr", github: "GH", youtube: "YT", tiktok: "TT", facebook: "f", snapchat: "SC", threads: "@" };
 
 /** Two-tier header: utility bar (contact + social, from Settings) and the main bar with pill navigation. */
 export async function Header({ ctx }: { ctx: SiteContext }) {
@@ -37,7 +37,7 @@ export async function Header({ ctx }: { ctx: SiteContext }) {
     allHref: `/${locale}/services`,
   };
   const contact = settings.contact ?? {};
-  const social = Object.entries((settings.social ?? {}) as Record<string, string>).filter(([k, v]) => SOCIAL_SHORT[k] && /^https?:\/\//.test(v ?? ""));
+  const social = socialFor(settings.social, "header");
   const themeLabels = { label: t("theme.label"), light: t("theme.light"), dark: t("theme.dark") };
 
   const utility = (contact.email || contact.phones?.length || social.length) ? (
@@ -50,7 +50,7 @@ export async function Header({ ctx }: { ctx: SiteContext }) {
         {social.length > 0 && (
           <div className="flex items-center gap-2">
             <span className="hidden lg:inline">{t("footer.follow")}:</span>
-            {social.map(([k, v]) => <a key={k} href={v} target="_blank" rel="noopener noreferrer" className="social-dot" aria-label={k} dir="ltr">{SOCIAL_SHORT[k]}</a>)}
+            <SocialList social={settings.social} place="header" />
           </div>
         )}
       </div>

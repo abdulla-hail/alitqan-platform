@@ -133,7 +133,7 @@
   .eyebrow {
     display: inline-flex; align-items: center; gap: 0.6rem;
     font-size: 0.8125rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase;
-    color: var(--color-primary);
+    color: var(--c-primary-text, var(--color-primary));
   }
   [dir="rtl"] .eyebrow { letter-spacing: 0; text-transform: none; font-size: 0.9rem; }
   .eyebrow::before {
@@ -158,7 +158,7 @@
   .btn-accent { background: var(--color-accent); color: var(--color-on-accent); }
   .btn-accent:hover { background: color-mix(in oklab, var(--color-accent) 85%, var(--color-fg)); }
   .btn-outline { border-color: var(--color-line); color: var(--color-fg); background: var(--color-surface); }
-  .btn-outline:hover { border-color: var(--color-primary); color: var(--color-primary); }
+  .btn-outline:hover { border-color: var(--color-primary); color: var(--c-primary-text, var(--color-primary)); }
   .btn-ghost { color: var(--color-fg); }
   .btn-ghost:hover { background: var(--color-subtle); }
   .btn-danger { background: var(--color-danger); color: #fff; }
@@ -176,7 +176,7 @@
 
   .icon-tile {
     display: inline-grid; place-items: center; width: 2.75rem; height: 2.75rem; flex: none;
-    border-radius: var(--radius-brand-sm); background: var(--color-soft); color: var(--color-primary);
+    border-radius: var(--radius-brand-sm); background: var(--color-soft); color: var(--c-primary-text, var(--color-primary));
   }
 
   .chip {
@@ -215,7 +215,7 @@
   .prose-brand > * + * { margin-top: 1.1em; }
   .prose-brand h2 { font-size: 1.6rem; font-weight: 700; margin-top: 2em; }
   .prose-brand h3 { font-size: 1.25rem; font-weight: 700; margin-top: 1.6em; }
-  .prose-brand a { color: var(--color-primary); text-decoration: underline; text-underline-offset: 3px; }
+  .prose-brand a { color: var(--c-primary-text, var(--color-primary)); text-decoration: underline; text-underline-offset: 3px; }
   .prose-brand ul { list-style: none; padding: 0; }
   .prose-brand ul li { position: relative; padding-inline-start: 1.4rem; }
   .prose-brand ul li::before { content: ""; position: absolute; inset-inline-start: 0.2rem; top: 0.75em; width: 0.4rem; height: 0.4rem; background: var(--color-accent); transform: rotate(45deg); }
@@ -229,3 +229,15 @@
 
 
 }
+
+/* Brand-coloured TEXT uses a readable variant of the brand primary (same hue; only lightened/darkened
+   when contrast on the current surface would be too low — e.g. a deep brand blue on dark mode).
+   Fills, buttons, borders and the logo keep the exact brand colour in both modes. Unlayered on purpose
+   so it wins over the generated utilities. */
+:root { --c-primary-text: var(--c-primary); }
+.text-primary,
+.hover\:text-primary:hover,
+.group:hover .group-hover\:text-primary,
+.group[open] .group-open\:text-primary,
+.focus\:text-primary:focus,
+.focus-visible\:text-primary:focus-visible { color: var(--c-primary-text, var(--c-primary)); }

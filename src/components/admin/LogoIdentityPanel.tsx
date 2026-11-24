@@ -111,7 +111,7 @@ export function LogoIdentityPanel({ b, set, ar }: { b: BrandSettings; set: <K ex
           </select>
         </div>
         <div>
-          <label className="label" htmlFor="on-dark">{ar ? "النسخة على الخلفيات الداكنة" : "Version on dark backgrounds"}</label>
+          <label className="label" htmlFor="on-dark">{ar ? "النسخة على الأقسام الداكنة دائماً (الفوتر واللوحات الداكنة)" : "Version on always-dark panels (footer, dark panels)"}</label>
           <select id="on-dark" className="input" value={onDark} onChange={(e) => setSys({ on_dark: e.target.value as LogoSystem["on_dark"] })}>
             <option value="light">{ar ? "ملوّنة مُفتّحة" : "Colour, lifted for dark"}</option>
             <option value="white">{ar ? "بيضاء" : "White"}</option>
@@ -192,7 +192,19 @@ export function LogoIdentityPanel({ b, set, ar }: { b: BrandSettings; set: <K ex
           <input type="range" min={0.6} max={4} step={0.05} value={particles.size} onChange={(e) => setParticles({ ...particles, size: Number(e.target.value) })} className="w-full accent-[var(--color-primary)]" dir="ltr" />
           <span className="mt-1 block text-xs text-muted">{ar ? "الأشكال غير الدائرية تُرسم أكبر قليلاً تلقائياً ليظهر شكلها بوضوح." : "Non-circle shapes are drawn slightly larger automatically so their shape reads."}</span>
         </label>
-        <ParticleShapePicker name="site-particles" ar={ar} shape={particles.shape} pattern={particles.pattern} onChange={(patch) => setParticles({ ...particles, ...patch })} />
+        <ParticleShapePicker name="site-particles" ar={ar} shape={particles.shape} pattern={particles.pattern} mix={particles.mix} onChange={(patch) => setParticles({ ...particles, ...patch })} />
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          {([
+            ["density", ar ? "كثافة الجسيمات" : "Density", 0.5, 2, 0.05, ar ? "أعلى = جسيمات أقرب وأكثر" : "Higher = closer, more particles"],
+            ["speed", ar ? "سرعة الحركة" : "Motion speed", 0, 2.5, 0.05, ar ? "0 = بدون حركة ذاتية (يبقى التفاعل)" : "0 = no drift (interaction stays)"],
+          ] as const).map(([k, lbl, min, max, step, hint]) => (
+            <label key={k} className="block">
+              <span className="label flex items-center justify-between"><span>{lbl}</span><span className="font-mono text-xs text-muted" dir="ltr">{particles[k]}×</span></span>
+              <input type="range" min={min} max={max} step={step} value={particles[k]} onChange={(e) => setParticles({ ...particles, [k]: Number(e.target.value) })} className="w-full accent-[var(--color-primary)]" dir="ltr" data-particle-range={k} />
+              <span className="mt-1 block text-xs text-muted">{hint}</span>
+            </label>
+          ))}
+        </div>
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           <AmbientPreview colors={particles} dark={false} label={ar ? "الوضع النهاري" : "Light mode"} className="grid h-40 place-items-center rounded-xl border border-line bg-[#F7F9FD]" />
           <AmbientPreview colors={particles} dark label={ar ? "الوضع الليلي" : "Dark mode"} className="grid h-40 place-items-center rounded-xl bg-[#070B1A]" />

@@ -14,7 +14,7 @@ export default async function BrandPage() {
     logo_system: b.logo_system ?? {},
     logo_url: b.logo_url ?? null, logo_dark_url: b.logo_dark_url ?? null, logo_alt_url: b.logo_alt_url ?? null, symbol_url: b.symbol_url ?? null,
     favicon_url: b.favicon_url ?? null, og_image_url: b.og_image_url ?? null,
-    colors: { light: { ...FALLBACK_PALETTES.light, ...(b.colors?.light ?? {}) }, dark: { ...FALLBACK_PALETTES.dark, ...(b.colors?.dark ?? {}) } },
+    colors: { light: { ...FALLBACK_PALETTES.light, ...(b.colors?.light ?? {}) }, dark: { ...FALLBACK_PALETTES.dark, ...(b.colors?.dark ?? {}) }, dark_brand: b.colors?.dark_brand === "custom" ? "custom" : "same" },
     fonts: b.fonts ?? {}, radius: b.radius ?? "14px", backgrounds: b.backgrounds ?? {}, default_theme: b.default_theme === "dark" ? "dark" : "light",
   };
   return <BrandManager brand={brand} />;

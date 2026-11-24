@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { normalizeSiteUrl, publicEnv } from "@/lib/env";
 import { pick } from "@/lib/i18n";
+import { socialUrls } from "@/lib/social";
 import type { SiteContext } from "@/services/site";
 import type { Localized, Seo } from "@/types/content";
 
@@ -68,7 +69,7 @@ export function buildMetadata(
 export function organizationJsonLd(ctx: SiteContext) {
   const base = siteUrl(ctx);
   const c = ctx.settings.contact ?? {};
-  const social = Object.values(ctx.settings.social ?? {}).filter((v) => typeof v === "string" && /^https?:/.test(v as string));
+  const social = socialUrls(ctx.settings.social);
   return {
     "@context": "https://schema.org",
     "@type": "Organization",

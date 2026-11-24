@@ -82,7 +82,9 @@ function MarkPair({
   );
   if (surface === "light") return one(onLight);
   if (surface === "dark") return one(onDark);
-  if (onLight === onDark) return one(onLight);
+  // Switching the site to dark mode keeps the ORIGINAL logo, unless the admin explicitly chose
+  // "use the dark-background version in dark mode" (logo_system.dark_mode_logo = "variant").
+  if (sys?.dark_mode_logo !== "variant" || onLight === onDark) return one(onLight);
   return (
     <>
       {one(onLight, "dark:hidden")}
@@ -128,7 +130,7 @@ export function Logo({
   );
   if (brand?.logo_mode === "uploaded" && brand.logo_url) {
     const forced = surface === "dark" && brand.logo_dark_url ? brand.logo_dark_url : brand.logo_url;
-    const swap = surface === "auto" && brand.logo_dark_url;
+    const swap = surface === "auto" && brand.logo_dark_url && sys?.dark_mode_logo === "variant";
     return (
       <span className="inline-flex min-w-0 items-center gap-2.5" aria-label={name}>
         {/* eslint-disable-next-line @next/next/no-img-element */}

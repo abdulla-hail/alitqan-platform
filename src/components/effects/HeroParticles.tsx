@@ -26,8 +26,8 @@ export function HeroParticles({ settings, device, preview = false, brandColors }
     const protect = host.querySelector<HTMLElement>("[data-hero-title]");
     const s = JSON.parse(key) as HeroEffectSettings;
     const dev = device ?? deviceFor(window.innerWidth);
-    const reduced =
-      !preview && (window.matchMedia("(prefers-reduced-motion: reduce)").matches || document.documentElement.dataset.motion === "off");
+    // only the visitor's accessibility "reduce motion" setting stops the animation (the admin can turn the effect off)
+    const reduced = !preview && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     // the preview mirrors the public rules for the chosen device (so "desktop only" shows the fallback on mobile)
     const runs = effectRunsOn(s, dev) && !reduced;
     const mode = runs ? "running" : s.fallback;

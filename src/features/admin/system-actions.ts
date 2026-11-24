@@ -10,6 +10,7 @@ import { publicEnv } from "@/lib/env";
 import { sanitizeSvg } from "@/lib/svg-safety";
 import { radiusValue } from "@/lib/brand/radius";
 import { sanitizeBrandParticles } from "@/lib/brand/particles";
+import { normalizeSocial } from "@/lib/social";
 
 type SB = Awaited<ReturnType<typeof createSessionClient>>;
 async function codes(sb: SB) {
@@ -74,6 +75,7 @@ function cleanLogoSystem(v: unknown, prev: Record<string, unknown> | null | unde
     on_light: ["color", "dark", "mono"].includes(String(o.on_light)) ? o.on_light : "color",
     on_dark: ["light", "white", "color", "mono"].includes(String(o.on_dark)) ? o.on_dark : "light",
     show_name: Boolean(o.show_name),
+    dark_mode_logo: o.dark_mode_logo === "variant" ? "variant" : "original",
     header_name: Object.fromEntries(Object.entries(o.header_name && typeof o.header_name === "object" ? (o.header_name as Record<string, unknown>) : {}).filter(([k, v]) => /^[a-z]{2}(-[A-Z]{2})?$/.test(k) && typeof v === "string" && v.trim()).map(([k, v]) => [k, String(v).replace(/[<>]/g, "").trim().slice(0, 40)])),
     // server-owned: never taken from the client
     ...(prev?.previous_colors ? { previous_colors: prev.previous_colors } : {}),
@@ -114,7 +116,7 @@ export async function saveBrand(input: Record<string, unknown>) {
       symbol_url: safeUrl(input.symbol_url, "symbol_url"),
       favicon_url: safeUrl(input.favicon_url, "favicon_url"),
       og_image_url: safeUrl(input.og_image_url, "og_image_url"),
-      colors: { light: palette(colors.light, cur?.colors?.light ?? {}), dark: palette(colors.dark, cur?.colors?.dark ?? {}) },
+      colors: { light: palette(colors.light, cur?.colors?.light ?? {}), dark: palette(colors.dark, cur?.colors?.dark ?? {}), dark_brand: colors.dark_brand === "custom" ? "custom" : "same" },
       radius: radiusValue(input.radius), // Global Border Radius, clamped to 0–40px
       default_theme: input.default_theme === "dark" ? "dark" : "light", // two modes only — no device/system mode
       backgrounds: {
@@ -153,9 +155,18 @@ export async function saveSetting(key: string, value: Record<string, unknown>) {
           map_url: safeUrl(value.map_url, "map_url") ?? "",
         };
         break;
-      case "social":
-        v = Object.fromEntries(["linkedin", "x", "instagram", "behance", "dribbble", "github", "youtube", "tiktok", "facebook", "snapchat", "threads"].map((k) => [k, safeUrl(value[k], k) ?? ""]));
+      case "social": {
+        // dynamic platform list (order = display order); legacy key→url maps are converted
+        const items = [];
+        for (const it of normalizeSocial(value)) {
+          const url = /^(mailto:|tel:)/i.test(it.url) ? it.url.replace(/[\s<>"]/g, "").slice(0, 200) : safeUrl(it.url, `social.${it.platform}`) ?? "";
+          const icon = it.icon_url ? safeUrl(it.icon_url, "social.icon") ?? "" : "";
+          if (icon) await assertSafeSvgUrl(icon, "social.icon");
+          items.push({ ...it, url, icon_url: icon });
+        }
+        v = { items };
         break;
+      }
       case "seo":
         v = { title_template: loc(value.title_template, langs, 120), default_title: loc(value.default_title, langs, 120), default_description: loc(value.default_description, langs, 320), keywords: loc(value.keywords, langs, 400), twitter_handle: s(value.twitter_handle, 40), google_verification: s(value.google_verification, 120) };
         break;

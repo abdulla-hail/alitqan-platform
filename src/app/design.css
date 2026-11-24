@@ -31,6 +31,7 @@
   --c-muted: color-mix(in oklab, var(--c-on-ink) 68%, var(--c-ink));
   --c-border: color-mix(in oklab, var(--c-on-ink) 14%, transparent);
   --c-primary: var(--c-ink-primary);
+  --c-primary-text: var(--c-ink-primary-text, var(--c-ink-primary));
   --c-on-primary: var(--c-ink-on-primary);
   /* the --color-* aliases are computed at :root, so they must be re-declared here too */
   --color-bg: var(--c-background);

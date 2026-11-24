@@ -35,6 +35,8 @@ export class FrameScheduler {
   private active = new Set<ParticleEngine>();
   private raf = 0;
   private last = 0;
+  /** minimum ms between frames (0 = every display frame); e.g. ~33 ms = 30 fps to save battery */
+  constructor(private minFrameMs = 0) {}
   add(e: ParticleEngine) {
     this.active.add(e);
     if (!this.raf) {
@@ -53,7 +55,11 @@ export class FrameScheduler {
     return this.active.size;
   }
   private loop = (now: number) => {
-    const dt = Math.min(2.5, (now - this.last) / 16.667);
+    if (this.minFrameMs && now - this.last < this.minFrameMs - 2) {
+      this.raf = requestAnimationFrame(this.loop);
+      return;
+    }
+    const dt = Math.min(3, (now - this.last) / 16.667);
     this.last = now;
     for (const e of this.active) e.frame(dt);
     this.raf = this.active.size ? requestAnimationFrame(this.loop) : 0;
@@ -160,7 +166,31 @@ export class ParticleEngine {
     };
     on(host, "pointerleave", leave, { passive: true });
     on(host, "pointerup", leave, { passive: true });
-    on(host, "pointercancel", leave, { passive: true });
+    // Touch: browsers fire pointercancel as soon as a finger starts scrolling, which would end the
+    // interaction instantly. Touch events keep flowing while the page scrolls, so they drive the
+    // touch pointer instead (passive: never blocks scrolling).
+    on(host, "pointercancel", (e) => { if (e.pointerType !== "touch") this.pointer.active = false; }, { passive: true });
+    const touchAt = (t: Touch) => {
+      const r = this.o.canvas.getBoundingClientRect();
+      return { x: t.clientX - r.left, y: t.clientY - r.top };
+    };
+    on(host, "touchstart", (e) => {
+      if (!this.o.settings.interaction.touch || !e.touches[0]) return;
+      const p = touchAt(e.touches[0]);
+      this.pointer = { ...this.pointer, x: p.x, y: p.y, active: true };
+      this.kick();
+    }, { passive: true });
+    on(host, "touchmove", (e) => {
+      if (!this.o.settings.interaction.touch || !e.touches[0]) return;
+      const p = touchAt(e.touches[0]);
+      this.pointer.x = p.x;
+      this.pointer.y = p.y;
+      this.pointer.active = true;
+      this.kick();
+    }, { passive: true });
+    const touchEnd = (e: TouchEvent) => { if (!e.touches.length) this.pointer.active = false; };
+    on(host, "touchend", touchEnd, { passive: true });
+    on(host, "touchcancel", touchEnd, { passive: true });
     const vis = () => (document.hidden ? this.stop() : this.kick());
     document.addEventListener("visibilitychange", vis);
     this.off.push(() => document.removeEventListener("visibilitychange", vis));
@@ -225,13 +255,21 @@ export class ParticleEngine {
     const s = this.o.settings;
     const prof = this.profile();
     const { w, h } = this;
-    // mesh pattern: triangles (offset rows), squares (straight grid), hexagons (honeycomb = triangular
-    // lattice with every third point removed, so each remaining point has 3 neighbours)
+    // Mesh patterns:
+    //  triangles     offset rows, links → right, down-left, down-right
+    //  squares       straight grid, links → right, down
+    //  hexagons      honeycomb: triangular lattice with every third point removed (3 links each)
+    //  diamonds      offset rows at half height, diagonal links only → rotated-square (rhombus) mesh
+    //  polygons      triangular lattice with jittered points → irregular low-poly facets
+    //  mixed         triangular lattice where some horizontal links are dropped → triangles + quads
+    //  constellation scattered points, each linked to its nearest neighbours (plexus)
     const pattern = s.particles.pattern;
+    if (pattern === "constellation") return this.buildConstellation();
     const square = pattern === "squares";
+    const diamonds = pattern === "diamonds";
     // honeycomb keeps 2/3 of the points; tighten its spacing a little so the cells stay compact
-    let sp = pattern === "hexagons" ? prof.spacing * 0.8 : prof.spacing;
-    const rowH = () => (square ? sp : sp * 0.866);
+    let sp = (pattern === "hexagons" ? prof.spacing * 0.8 : diamonds ? prof.spacing * 1.25 : prof.spacing) * this.quality;
+    const rowH = () => (square ? sp : diamonds ? sp / 2 : sp * 0.866);
     const keepShare = pattern === "hexagons" ? 2 / 3 : 1;
     // spacing grows until the device's particle cap is respected
     while ((w / sp + 2) * (h / rowH() + 2) * keepShare > prof.max_particles && sp < 400) sp *= 1.06;
@@ -247,8 +285,13 @@ export class ParticleEngine {
           const q = i - (j - (j & 1)) / 2;
           if ((((q - j) % 3) + 3) % 3 === 0) continue;
         }
-        const hx = (i - 0.5) * sp + (!square && j % 2 ? sp / 2 : 0);
-        const hy = (j - 0.5) * rowH();
+        let hx = (i - 0.5) * sp + (!square && j % 2 ? sp / 2 : 0);
+        let hy = (j - 0.5) * rowH();
+        if (pattern === "polygons") {
+          // deterministic jitter (stable across frames/resizes) → irregular facets, still evenly spread
+          hx += (hash(i + 31, j) - 0.5) * sp * 0.55;
+          hy += (hash(i, j + 17) - 0.5) * sp * 0.5;
+        }
         const t = Math.hypot(hx - cx, hy - cy) / maxD; // 0 centre → 1 corner
         const keep = s.area.center_density + (s.area.edge_density - s.area.center_density) * Math.min(1, t * 1.15);
         if (hash(i, j) > keep) continue;
@@ -265,16 +308,70 @@ export class ParticleEngine {
         const a = grid[j * cols + i];
         if (a < 0) continue;
         const odd = j % 2;
-        const cand = square ? [[i + 1, j], [i, j + 1]] : [[i + 1, j], [i - 1 + odd, j + 1], [i + odd, j + 1]];
+        const cand = square
+          ? [[i + 1, j], [i, j + 1]]
+          : diamonds
+            ? [[i - 1 + odd, j + 1], [i + odd, j + 1]]
+            : [[i + 1, j], [i - 1 + odd, j + 1], [i + odd, j + 1]];
         for (const [ni, nj] of cand) {
           if (ni < 0 || ni >= cols || nj >= rows) continue;
           const b = grid[nj * cols + ni];
           if (b < 0) continue;
           if (hash(a + 7, b + 3) > s.particles.link_density) continue;
+          // "mixed": drop ~45% of horizontal links → neighbouring triangles merge into quads
+          if (pattern === "mixed" && nj === j && hash(a + 3, j + 11) < 0.45) continue;
           L.push(a, b);
         }
       }
     }
+    this.pts = pts;
+    this.links = Int32Array.from(L);
+  }
+
+  /** Scattered points (stable pseudo-random positions) linked to their 3 nearest neighbours. */
+  private buildConstellation() {
+    const s = this.o.settings;
+    const prof = this.profile();
+    const { w, h } = this;
+    const sp = prof.spacing * this.quality;
+    const n = Math.min(prof.max_particles, Math.round(((w * h) / (sp * sp)) * 0.85));
+    const pts: P[] = [];
+    // jittered grid sampling keeps the scatter even (no clumps / big holes)
+    const cols = Math.max(1, Math.round(Math.sqrt((n * w) / Math.max(1, h))));
+    const rows = Math.max(1, Math.ceil(n / cols));
+    const cw = w / cols, ch = h / rows;
+    for (let j = 0; j < rows; j++) {
+      for (let i = 0; i < cols; i++) {
+        const hx = (i + 0.15 + hash(i, j) * 0.7) * cw;
+        const hy = (j + 0.15 + hash(j + 5, i + 9) * 0.7) * ch;
+        pts.push({ hx, hy, x: hx, y: hy, vx: 0, vy: 0, ph: hash(j, i) * Math.PI * 2, zone: this.zoneAt(hx, hy), keep: 1 });
+      }
+    }
+    // spatial bins → nearest neighbours without all-pairs work
+    const cell = Math.max(cw, ch) * 1.6;
+    const bins = new Map<string, number[]>();
+    pts.forEach((p, idx) => {
+      const k = `${Math.floor(p.hx / cell)}:${Math.floor(p.hy / cell)}`;
+      (bins.get(k) ?? bins.set(k, []).get(k)!).push(idx);
+    });
+    const seen = new Set<string>();
+    const L: number[] = [];
+    pts.forEach((p, a) => {
+      const bx = Math.floor(p.hx / cell), by = Math.floor(p.hy / cell);
+      const near: [number, number][] = [];
+      for (let dx = -1; dx <= 1; dx++) for (let dy = -1; dy <= 1; dy++) {
+        for (const b of bins.get(`${bx + dx}:${by + dy}`) ?? []) {
+          if (b !== a) near.push([b, (pts[b].hx - p.hx) ** 2 + (pts[b].hy - p.hy) ** 2]);
+        }
+      }
+      near.sort((x, y) => x[1] - y[1]);
+      for (const [b] of near.slice(0, 3)) {
+        const key = a < b ? `${a}-${b}` : `${b}-${a}`;
+        if (seen.has(key) || hash(a + 7, b + 3) > s.particles.link_density) continue;
+        seen.add(key);
+        L.push(a, b);
+      }
+    });
     this.pts = pts;
     this.links = Int32Array.from(L);
   }
@@ -292,10 +389,11 @@ export class ParticleEngine {
     let last = performance.now();
     const loop = (now: number) => {
       if (!this.running) return;
-      const dt = Math.min(2.5, (now - last) / 16.667);
+      const dt = Math.min(3, (now - last) / 16.667);
       last = now;
       this.step(dt);
       this.draw();
+      this.adapt(dt);
       this.raf = requestAnimationFrame(loop);
     };
     this.raf = requestAnimationFrame(loop);
@@ -312,6 +410,23 @@ export class ParticleEngine {
     if (!this.running) return;
     this.step(dt);
     this.draw();
+    this.adapt(dt);
+  }
+
+  /**
+   * Keep moving on slow devices: if frames stay slow (below ~24 fps for ~2 s), thin the lattice a
+   * little (up to 1.7× spacing) instead of freezing the animation. Never stops the motion itself.
+   */
+  private slow = 0;
+  private quality = 1;
+  private adapt(dt: number) {
+    if (this.o.still) return;
+    this.slow = dt > 2.5 ? this.slow + 1 : Math.max(0, this.slow - 2); // dt is in 60 fps units: 2.5 ≈ 42 ms
+    if (this.slow > 48 && this.quality < 1.7) {
+      this.slow = 0;
+      this.quality = Math.min(1.7, this.quality * 1.18);
+      this.resize();
+    }
   }
 
   private step(dt: number) {
@@ -445,7 +560,8 @@ export class ParticleEngine {
       const p = this.pts[i];
       const bi = Math.min(BUCKETS - 1, Math.floor((Math.min(v, 1.6) / 1.6) * BUCKETS));
       const rr = size * (1 + Math.max(0, v - 1) * 0.6);
-      const shape = s.particles.shape === "mixed" ? MIXED[Math.floor(p.ph * 10) % MIXED.length] : s.particles.shape;
+      const mix = s.particles.mix;
+      const shape = s.particles.shape === "mixed" ? mix[Math.floor(p.ph * 10) % mix.length] : s.particles.shape;
       addShape(paths[bi], shape, p.x, p.y, rr);
       used[bi] = true;
     }
@@ -481,8 +597,6 @@ export class ParticleEngine {
   }
 }
 
-const MIXED: Exclude<ParticleShape, "mixed">[] = ["circle", "square", "triangle", "diamond"];
-
 /** Adds one particle of the given shape (similar visual weight across shapes) to a batched path. */
 function addShape(path: Path2D, shape: ParticleShape, x: number, y: number, r: number) {
   const poly = (n: number, rad: number, rot: number) => {
@@ -506,6 +620,37 @@ function addShape(path: Path2D, shape: ParticleShape, x: number, y: number, r: n
       break;
     case "hexagon":
       poly(6, r * 1.15, 0);
+      break;
+    case "pentagon":
+      poly(5, r * 1.25, -Math.PI / 2);
+      break;
+    case "star": {
+      // 5-point geometric star: alternating outer / inner radius
+      for (let k = 0; k < 10; k++) {
+        const a = -Math.PI / 2 + (k * Math.PI) / 5;
+        const rad = k % 2 ? r * 0.62 : r * 1.55;
+        const px = x + Math.cos(a) * rad, py = y + Math.sin(a) * rad;
+        if (k === 0) path.moveTo(px, py);
+        else path.lineTo(px, py);
+      }
+      path.closePath();
+      break;
+    }
+    case "plus": {
+      // thin geometric cross (one outline → no overlap issues with the fill rule)
+      const a = r * 1.4, t = r * 0.42;
+      path.moveTo(x - t, y - a); path.lineTo(x + t, y - a); path.lineTo(x + t, y - t); path.lineTo(x + a, y - t);
+      path.lineTo(x + a, y + t); path.lineTo(x + t, y + t); path.lineTo(x + t, y + a); path.lineTo(x - t, y + a);
+      path.lineTo(x - t, y + t); path.lineTo(x - a, y + t); path.lineTo(x - a, y - t); path.lineTo(x - t, y - t);
+      path.closePath();
+      break;
+    }
+    case "ring":
+      // outer circle clockwise + inner circle counter-clockwise → hollow ring with the default fill rule
+      path.moveTo(x + r * 1.35, y);
+      path.arc(x, y, r * 1.35, 0, Math.PI * 2);
+      path.moveTo(x + r * 0.75, y);
+      path.arc(x, y, r * 0.75, 0, Math.PI * 2, true);
       break;
     default:
       path.moveTo(x + r, y);

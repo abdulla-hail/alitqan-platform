@@ -159,7 +159,7 @@ export function HeroEffectManager({ published, draft, publishedAt, draftAt, hero
           </Card>
 
           <Card letter={ar ? "ب" : "B"} title={ar ? "إعدادات الجسيمات" : "Particles"} desc={ar ? "العدد والمسافات تُضبط لكل جهاز في القسم «و»." : "Count and spacing are set per device in section F."}>
-            <ParticleShapePicker name="hero-particles" ar={ar} shape={s.particles.shape} pattern={s.particles.pattern} onChange={(patch) => set("particles", patch)} />
+            <ParticleShapePicker name="hero-particles" ar={ar} shape={s.particles.shape} pattern={s.particles.pattern} mix={s.particles.mix} onChange={(patch) => set("particles", patch)} />
             <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
               <Range k="size" label={ar ? "حجم النقاط" : "Dot size"} unit="px" value={s.particles.size} onChange={(v) => set("particles", { size: v })} />
               <Range k="opacity" label={ar ? "شفافية النقاط" : "Dot opacity"} value={s.particles.opacity} onChange={(v) => set("particles", { opacity: v })} />

@@ -1,4 +1,5 @@
 "use client";
+import { SocialManager } from "./SocialManager";
 import { Plus, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -87,13 +88,7 @@ export function SettingsManager({ settings, templates, emailConfigured }: { sett
             <FieldEditor field={{ name: "map_url", kind: "url", label: T("رابط الخريطة (Google Maps)", "Map link (Google Maps)") }} value={s.contact?.map_url} onChange={(v) => upd("contact", { map_url: v })} />
           </>
         )}
-        {tab === "social" && (
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-            {["linkedin", "x", "instagram", "behance", "dribbble", "github", "youtube", "tiktok", "facebook", "snapchat", "threads"].map((k) => (
-              <label key={k} className="block"><span className="label capitalize">{k}</span><input dir="ltr" className="input" placeholder="https://" value={s.social?.[k] ?? ""} onChange={(e) => upd("social", { [k]: e.target.value })} /></label>
-            ))}
-          </div>
-        )}
+        {tab === "social" && <SocialManager value={s.social} ar={ar} onChange={(v) => setS((cur) => ({ ...cur, social: v }))} />}
         {tab === "seo" && (
           <>
             {L("title_template", "text", T("قالب العنوان (%s = عنوان الصفحة)", "Title template (%s = page title)"), "seo")}

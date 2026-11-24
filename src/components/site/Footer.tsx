@@ -3,8 +3,7 @@ import { ArrowUp, Mail, MapPin, MessageCircle, Phone, Rocket } from "lucide-reac
 import { Logo } from "@/components/brand/Logo";
 import { localeHref, pick } from "@/lib/i18n";
 import type { SiteContext } from "@/services/site";
-
-const SOCIAL_SHORT: Record<string, string> = { linkedin: "in", x: "X", instagram: "IG", behance: "Bē", dribbble: "Dr", github: "GH", youtube: "YT", tiktok: "TT", facebook: "f", snapchat: "SC", threads: "@" };
+import { SocialList } from "./SocialIcon";
 
 /** Ink footer: CTA strip, brand + social, link columns, contact, legal row. Plus floating call/WhatsApp buttons. */
 export function Footer({ ctx }: { ctx: SiteContext }) {
@@ -15,7 +14,6 @@ export function Footer({ ctx }: { ctx: SiteContext }) {
   const year = new Date().getFullYear();
   const wa = typeof contact.whatsapp === "string" ? contact.whatsapp.replace(/[^\d]/g, "") : "";
   const phone = contact.phones?.[0] ? String(contact.phones[0]).replace(/\s/g, "") : "";
-  const social = Object.entries((settings.social ?? {}) as Record<string, string>).filter(([k, v]) => SOCIAL_SHORT[k] && /^https?:\/\//.test(v ?? ""));
   const name = P(brand?.name) || "ALITQAN";
   return (
     <>
@@ -37,11 +35,7 @@ export function Footer({ ctx }: { ctx: SiteContext }) {
               <div className="lg:col-span-4">
                 <Logo brand={brand} locale={locale} size="lg" surface="dark" />
                 <p className="mt-5 max-w-sm leading-relaxed text-muted">{P(brand?.tagline)}</p>
-                {social.length > 0 && (
-                  <ul className="mt-6 flex flex-wrap gap-2">
-                    {social.map(([k, v]) => <li key={k}><a href={v} target="_blank" rel="noopener noreferrer" className="social-dot !h-9 !min-w-9 !border-line !text-fg hover:!bg-primary hover:!text-on-primary" aria-label={k} dir="ltr">{SOCIAL_SHORT[k]}</a></li>)}
-                  </ul>
-                )}
+                <SocialList social={settings.social} place="footer" className="mt-6 flex flex-wrap gap-2" linkClassName="social-dot !h-9 !min-w-9 !border-line !text-fg hover:!bg-primary hover:!text-on-primary" iconClassName="h-4 w-4" />
               </div>
               <div className="lg:col-span-3">
                 <h2 className="text-base font-bold">{t("footer.contact")}</h2>
