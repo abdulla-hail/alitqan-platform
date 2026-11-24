@@ -41,7 +41,9 @@ export function AmbientParticles({ colors }: { colors: BrandParticles }) {
         section.appendChild(layer);
         const variant = (i % 4) as AmbientVariant;
         try {
-          const engine = new ParticleEngine({ canvas, host: section, settings: ambientSettings(brand, dark(), variant), scheduler, still });
+          // the section's main heading stays clean: the mesh fades softly around it
+          const protect = section.querySelector<HTMLElement>("h1, h2");
+          const engine = new ParticleEngine({ canvas, host: section, protect, settings: ambientSettings(brand, dark(), variant), scheduler, still });
           fields.push({ engine, variant });
           requestAnimationFrame(() => (canvas.style.opacity = "1"));
         } catch {

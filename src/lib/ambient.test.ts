@@ -19,24 +19,36 @@ describe("brand particle colours", () => {
   });
 });
 
-describe("subtle section particles", () => {
-  it("are far lighter than the hero effect", () => {
+describe("section particle mesh", () => {
+  it("is a tight, uniform, fully linked lattice (no random thinning)", () => {
     for (const v of [0, 1, 2, 3] as const) {
       const s = ambientSettings(BRAND_PARTICLES_DEFAULTS, false, v);
-      expect(s.devices.desktop.max_particles).toBeLessThanOrEqual(HERO_EFFECT_DEFAULTS.devices.desktop.max_particles / 5);
-      expect(s.devices.mobile.max_particles).toBeLessThanOrEqual(60);
+      expect(s.devices.desktop.spacing).toBeLessThanOrEqual(42);
+      expect(s.area.center_density).toBe(1);
+      expect(s.area.edge_density).toBe(1);
+      expect(s.particles.link_density).toBe(1);
+      // neighbour links (≈ spacing) are always inside the link distance
+      expect(s.particles.link_distance).toBeGreaterThanOrEqual(s.devices.desktop.spacing * 1.8);
+    }
+  });
+  it("stays calm and lighter than the hero", () => {
+    for (const v of [0, 1, 2, 3] as const) {
+      const s = ambientSettings(BRAND_PARTICLES_DEFAULTS, false, v);
       expect(s.particles.size).toBeLessThan(HERO_EFFECT_DEFAULTS.particles.size);
       expect(s.particles.speed).toBeLessThan(HERO_EFFECT_DEFAULTS.particles.speed);
       expect(s.interaction.force).toBeLessThan(HERO_EFFECT_DEFAULTS.interaction.force);
       expect(s.interaction.click_wave).toBe(false);
       expect(s.colors.intensity).toBe(0);
+      expect(s.colors.link_opacity).toBeLessThanOrEqual(0.5);
+      expect(s.devices.mobile.max_particles).toBeLessThanOrEqual(400);
     }
   });
-  it("sections get different compositions", () => {
-    const comps = new Set([0, 1, 2, 3].map((v) => JSON.stringify(ambientSettings(BRAND_PARTICLES_DEFAULTS, false, v as 0).area)));
-    expect(comps.size).toBe(4);
+  it("links are clearer than the identity setting but capped", () => {
+    const s = ambientSettings(BRAND_PARTICLES_DEFAULTS, false, 0);
+    expect(s.colors.link_opacity).toBeGreaterThan(BRAND_PARTICLES_DEFAULTS.link_opacity);
+    expect(ambientSettings({ ...BRAND_PARTICLES_DEFAULTS, link_opacity: 1 }, false, 0).colors.link_opacity).toBe(0.5);
   });
-  it("use the identity colours, tuned per mode", () => {
+  it("uses the identity colours, tuned per mode", () => {
     const light = ambientSettings({ ...BRAND_PARTICLES_DEFAULTS, particle: "#112233" }, false, 0);
     expect(light.colors.particle).toBe("#112233");
     const dark = ambientSettings(BRAND_PARTICLES_DEFAULTS, true, 0);

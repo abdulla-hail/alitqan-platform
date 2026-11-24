@@ -88,3 +88,5 @@ html[data-motion="off"] .fab::after { animation: none; }
 [data-ambient-host] { isolation: isolate; }
 [data-ambient-host]:not(.sticky):not(.fixed):not(.absolute) { position: relative; }
 [data-ambient-layer] { position: absolute; inset: 0; z-index: -1; overflow: hidden; pointer-events: none; }
+/* soft fade at the top/bottom of each section so the mesh blends between sections (no hard seams) */
+[data-ambient-layer] { -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 72px, #000 calc(100% - 72px), transparent 100%); mask-image: linear-gradient(to bottom, transparent 0, #000 72px, #000 calc(100% - 72px), transparent 100%); }
