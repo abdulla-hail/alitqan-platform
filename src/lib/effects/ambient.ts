@@ -27,6 +27,8 @@ const VARIANTS: Record<AmbientVariant, { spacing: number; randomness: number; sp
 
 /** links are the texture: make them readable but calm (identity link opacity × 1.8, capped) */
 const LINK_BOOST = 1.8;
+/** squares / triangles / diamonds / hexagons are drawn this much larger than dots so their shape reads */
+const SHAPE_SCALE = 1.6;
 
 export function ambientSettings(brand: BrandParticles, dark: boolean, variant: AmbientVariant): HeroEffectSettings {
   const c = particlesForTheme(brand, dark);
@@ -35,7 +37,10 @@ export function ambientSettings(brand: BrandParticles, dark: boolean, variant: A
     mode: "all",
     fallback: "static",
     particles: {
-      size: 1.15,
+      shape: c.shape,
+      pattern: c.pattern,
+      // angular shapes need a little more room than a dot to be recognisable
+      size: c.shape === "circle" ? c.size : Math.round(c.size * SHAPE_SCALE * 100) / 100,
       opacity: c.opacity,
       speed: v.speed,
       randomness: v.randomness,

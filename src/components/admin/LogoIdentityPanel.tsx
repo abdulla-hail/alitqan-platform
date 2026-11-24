@@ -6,6 +6,7 @@ import type { BrandSettings, LogoSystem, Palette } from "@/types/content";
 import { FieldEditor } from "./FieldEditor";
 import { Switch } from "./ui";
 import { AmbientPreview } from "@/components/effects/AmbientPreview";
+import { ParticleShapePicker } from "./ParticleShapePicker";
 import { BRAND_PARTICLES_DEFAULTS, sanitizeBrandParticles, type BrandParticles } from "@/lib/brand/particles";
 
 const COLOR_FIELDS = [
@@ -153,7 +154,7 @@ export function LogoIdentityPanel({ b, set, ar }: { b: BrandSettings; set: <K ex
       <div className="space-y-4 rounded-2xl border border-line p-4 sm:p-5" data-particle-settings>
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div>
-            <h3 className="font-bold">{ar ? "ألوان الجسيمات" : "Particle colours"}</h3>
+            <h3 className="font-bold">{ar ? "الجسيمات: الألوان والأشكال" : "Particles: colours & shapes"}</h3>
             <p className="mt-1 text-sm text-muted">{ar ? "تُطبَّق على الجسيمات الخفيفة في جميع أقسام الموقع، وتُضبط تلقائياً للوضع الليلي. تأثير القسم الرئيسي له إعداداته المستقلة ويمكنه استخدام هذه الألوان." : "Used by the subtle particles in every section, auto-tuned for dark mode. The hero effect has its own settings and can use these colours."}</p>
           </div>
           <button type="button" className="btn btn-ghost min-h-0 px-3 py-1.5 text-sm" onClick={() => setParticles(BRAND_PARTICLES_DEFAULTS)}>
@@ -186,6 +187,12 @@ export function LogoIdentityPanel({ b, set, ar }: { b: BrandSettings; set: <K ex
             </label>
           ))}
         </div>
+        <label className="block">
+          <span className="label flex items-center justify-between"><span>{ar ? "حجم الجسيمات" : "Particle size"}</span><span className="font-mono text-xs text-muted" dir="ltr">{particles.size}</span></span>
+          <input type="range" min={0.6} max={4} step={0.05} value={particles.size} onChange={(e) => setParticles({ ...particles, size: Number(e.target.value) })} className="w-full accent-[var(--color-primary)]" dir="ltr" />
+          <span className="mt-1 block text-xs text-muted">{ar ? "الأشكال غير الدائرية تُرسم أكبر قليلاً تلقائياً ليظهر شكلها بوضوح." : "Non-circle shapes are drawn slightly larger automatically so their shape reads."}</span>
+        </label>
+        <ParticleShapePicker name="site-particles" ar={ar} shape={particles.shape} pattern={particles.pattern} onChange={(patch) => setParticles({ ...particles, ...patch })} />
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           <AmbientPreview colors={particles} dark={false} label={ar ? "الوضع النهاري" : "Light mode"} className="grid h-40 place-items-center rounded-xl border border-line bg-[#F7F9FD]" />
           <AmbientPreview colors={particles} dark label={ar ? "الوضع الليلي" : "Dark mode"} className="grid h-40 place-items-center rounded-xl bg-[#070B1A]" />

@@ -8,7 +8,7 @@ describe("brand particle colours", () => {
   it("defaults to the identity blues and validates input", () => {
     expect(sanitizeBrandParticles(undefined)).toEqual(BRAND_PARTICLES_DEFAULTS);
     const p = sanitizeBrandParticles({ particle: "#abc", link: "red", glow: "#00FF88", opacity: 3, link_opacity: -1, extra: 1 });
-    expect(p).toEqual({ particle: "#ABC", link: BRAND_PARTICLES_DEFAULTS.link, glow: "#00FF88", opacity: 1, link_opacity: 0 });
+    expect(p).toEqual({ particle: "#ABC", link: BRAND_PARTICLES_DEFAULTS.link, glow: "#00FF88", opacity: 1, link_opacity: 0, size: 1.15, shape: "circle", pattern: "triangles" });
   });
   it("dark mode lifts the colours and lowers opacity (never brighter than light mode)", () => {
     const d = particlesForTheme(BRAND_PARTICLES_DEFAULTS, true);
@@ -63,5 +63,38 @@ describe("hero identity colours", () => {
     const s = withBrandColors(sanitizeHeroEffect({ colors: { source: "brand" } }), brand);
     expect([s.colors.particle, s.colors.link, s.colors.glow]).toEqual(["#111111", "#222222", "#333333"]);
     expect(sanitizeHeroEffect({ colors: { source: "evil" } }).colors.source).toBe("custom");
+  });
+});
+
+describe("particle shapes & mesh patterns", () => {
+  it("default to the current look (circles on a triangle mesh) and whitelist values", () => {
+    expect(HERO_EFFECT_DEFAULTS.particles.shape).toBe("circle");
+    expect(HERO_EFFECT_DEFAULTS.particles.pattern).toBe("triangles");
+    expect(sanitizeBrandParticles({}).shape).toBe("circle");
+    expect(sanitizeBrandParticles({ shape: "<svg>", pattern: "spiral" })).toMatchObject({ shape: "circle", pattern: "triangles" });
+    expect(sanitizeHeroEffect({ particles: { shape: "star", pattern: "x" } }).particles).toMatchObject({ shape: "circle", pattern: "triangles" });
+  });
+  it("accept every offered option and pass them to the section mesh (both modes)", () => {
+    for (const shape of ["circle", "square", "triangle", "diamond", "hexagon", "mixed"] as const) {
+      for (const pattern of ["triangles", "squares", "hexagons"] as const) {
+        const bp = sanitizeBrandParticles({ shape, pattern });
+        expect(bp).toMatchObject({ shape, pattern });
+        for (const dark of [false, true]) expect(ambientSettings(bp, dark, 0).particles).toMatchObject({ shape, pattern });
+        expect(sanitizeHeroEffect({ particles: { shape, pattern } }).particles).toMatchObject({ shape, pattern });
+      }
+    }
+  });
+});
+
+describe("particle size", () => {
+  it("is clamped, defaults to the current size, and angular shapes are drawn larger", () => {
+    expect(sanitizeBrandParticles({}).size).toBe(1.15);
+    expect(sanitizeBrandParticles({ size: 99 }).size).toBe(4);
+    expect(sanitizeBrandParticles({ size: -1 }).size).toBe(0.6);
+    expect(sanitizeBrandParticles({ size: null }).size).toBe(1.15);
+    const dot = ambientSettings(sanitizeBrandParticles({ size: 1.5 }), false, 0).particles.size;
+    const tri = ambientSettings(sanitizeBrandParticles({ size: 1.5, shape: "triangle" }), false, 0).particles.size;
+    expect(dot).toBe(1.5);
+    expect(tri).toBeGreaterThan(dot);
   });
 });

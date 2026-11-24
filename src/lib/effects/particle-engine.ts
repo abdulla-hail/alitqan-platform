@@ -10,7 +10,7 @@
  * - Pauses when off-screen or when the tab is hidden; `destroy()` removes every listener,
  *   observer and frame request (no leaks on navigation or re-initialisation).
  */
-import { deviceFor, effectRunsOn, type DeviceKey, type HeroEffectSettings } from "@/lib/hero-effect";
+import { deviceFor, effectRunsOn, type DeviceKey, type HeroEffectSettings, type ParticleShape } from "@/lib/hero-effect";
 
 type P = { hx: number; hy: number; x: number; y: number; vx: number; vy: number; ph: number; zone: number; keep: number };
 type Wave = { x: number; y: number; r: number; life: number };
@@ -104,6 +104,7 @@ export class ParticleEngine {
       JSON.stringify(prev.area) !== JSON.stringify(settings.area) ||
       JSON.stringify(prev.devices) !== JSON.stringify(settings.devices) ||
       prev.particles.link_density !== settings.particles.link_density ||
+      prev.particles.pattern !== settings.particles.pattern ||
       device !== this.o.device;
     this.o = { ...this.o, settings, device, still };
     if (layoutChanged) this.resize();
@@ -224,10 +225,16 @@ export class ParticleEngine {
     const s = this.o.settings;
     const prof = this.profile();
     const { w, h } = this;
+    // mesh pattern: triangles (offset rows), squares (straight grid), hexagons (honeycomb = triangular
+    // lattice with every third point removed, so each remaining point has 3 neighbours)
+    const pattern = s.particles.pattern;
+    const square = pattern === "squares";
+    // honeycomb keeps 2/3 of the points; tighten its spacing a little so the cells stay compact
+    let sp = pattern === "hexagons" ? prof.spacing * 0.8 : prof.spacing;
+    const rowH = () => (square ? sp : sp * 0.866);
+    const keepShare = pattern === "hexagons" ? 2 / 3 : 1;
     // spacing grows until the device's particle cap is respected
-    let sp = prof.spacing;
-    const rowH = () => sp * 0.866;
-    while ((w / sp + 2) * (h / rowH() + 2) > prof.max_particles && sp < 400) sp *= 1.06;
+    while ((w / sp + 2) * (h / rowH() + 2) * keepShare > prof.max_particles && sp < 400) sp *= 1.06;
     const cols = Math.ceil(w / sp) + 2;
     const rows = Math.ceil(h / rowH()) + 2;
     const grid: number[] = new Array(cols * rows).fill(-1);
@@ -235,7 +242,12 @@ export class ParticleEngine {
     const cx = w / 2, cy = h / 2, maxD = Math.hypot(cx, cy) || 1;
     for (let j = 0; j < rows; j++) {
       for (let i = 0; i < cols; i++) {
-        const hx = (i - 0.5) * sp + (j % 2 ? sp / 2 : 0);
+        if (pattern === "hexagons") {
+          // axial coordinates of an odd-row-offset lattice; drop every third point → honeycomb
+          const q = i - (j - (j & 1)) / 2;
+          if ((((q - j) % 3) + 3) % 3 === 0) continue;
+        }
+        const hx = (i - 0.5) * sp + (!square && j % 2 ? sp / 2 : 0);
         const hy = (j - 0.5) * rowH();
         const t = Math.hypot(hx - cx, hy - cy) / maxD; // 0 centre → 1 corner
         const keep = s.area.center_density + (s.area.edge_density - s.area.center_density) * Math.min(1, t * 1.15);
@@ -245,14 +257,15 @@ export class ParticleEngine {
       }
     }
     for (const p of pts) p.zone = this.zoneAt(p.hx, p.hy);
-    // neighbour links: right, down-left, down-right (triangular lattice)
+    // neighbour links: squares → right + down; triangles/hexagons → right, down-left, down-right
+    // (in the honeycomb the removed points break the triangles into hexagons automatically)
     const L: number[] = [];
     for (let j = 0; j < rows; j++) {
       for (let i = 0; i < cols; i++) {
         const a = grid[j * cols + i];
         if (a < 0) continue;
         const odd = j % 2;
-        const cand = [[i + 1, j], [i - 1 + odd, j + 1], [i + odd, j + 1]];
+        const cand = square ? [[i + 1, j], [i, j + 1]] : [[i + 1, j], [i - 1 + odd, j + 1], [i + odd, j + 1]];
         for (const [ni, nj] of cand) {
           if (ni < 0 || ni >= cols || nj >= rows) continue;
           const b = grid[nj * cols + ni];
@@ -432,8 +445,8 @@ export class ParticleEngine {
       const p = this.pts[i];
       const bi = Math.min(BUCKETS - 1, Math.floor((Math.min(v, 1.6) / 1.6) * BUCKETS));
       const rr = size * (1 + Math.max(0, v - 1) * 0.6);
-      paths[bi].moveTo(p.x + rr, p.y);
-      paths[bi].arc(p.x, p.y, rr, 0, Math.PI * 2);
+      const shape = s.particles.shape === "mixed" ? MIXED[Math.floor(p.ph * 10) % MIXED.length] : s.particles.shape;
+      addShape(paths[bi], shape, p.x, p.y, rr);
       used[bi] = true;
     }
     ctx.fillStyle = this.style(c.particle, c.gradient_to);
@@ -465,6 +478,38 @@ export class ParticleEngine {
   /** for tests / debugging */
   get stats() {
     return { particles: this.pts.length, links: this.links.length / 2, device: this.dev, running: this.running, width: this.w, height: this.h };
+  }
+}
+
+const MIXED: Exclude<ParticleShape, "mixed">[] = ["circle", "square", "triangle", "diamond"];
+
+/** Adds one particle of the given shape (similar visual weight across shapes) to a batched path. */
+function addShape(path: Path2D, shape: ParticleShape, x: number, y: number, r: number) {
+  const poly = (n: number, rad: number, rot: number) => {
+    for (let k = 0; k < n; k++) {
+      const a = rot + (k * Math.PI * 2) / n;
+      const px = x + Math.cos(a) * rad, py = y + Math.sin(a) * rad;
+      if (k === 0) path.moveTo(px, py);
+      else path.lineTo(px, py);
+    }
+    path.closePath();
+  };
+  switch (shape) {
+    case "square":
+      path.rect(x - r * 0.9, y - r * 0.9, r * 1.8, r * 1.8);
+      break;
+    case "triangle":
+      poly(3, r * 1.35, -Math.PI / 2);
+      break;
+    case "diamond":
+      poly(4, r * 1.3, 0);
+      break;
+    case "hexagon":
+      poly(6, r * 1.15, 0);
+      break;
+    default:
+      path.moveTo(x + r, y);
+      path.arc(x, y, r, 0, Math.PI * 2);
   }
 }
 

@@ -13,6 +13,12 @@ export type DeviceKey = "desktop" | "tablet" | "mobile";
 export type EffectMode = "all" | "desktop" | "off";
 export type Fallback = "static" | "glow" | "none";
 export type AreaPosition = "top" | "center" | "bottom";
+/** how each particle is drawn */
+export type ParticleShape = "circle" | "square" | "triangle" | "diamond" | "hexagon" | "mixed";
+/** which figures the connecting lines form */
+export type MeshPattern = "triangles" | "squares" | "hexagons";
+export const PARTICLE_SHAPES: ParticleShape[] = ["circle", "square", "triangle", "diamond", "hexagon", "mixed"];
+export const MESH_PATTERNS: MeshPattern[] = ["triangles", "squares", "hexagons"];
 
 export interface DeviceProfile {
   /** grid spacing between particles (px) — smaller = denser */
@@ -31,6 +37,8 @@ export interface HeroEffectSettings {
   /** what to show when the effect is off / not running (reduced motion, disabled device) */
   fallback: Fallback;
   particles: {
+    shape: ParticleShape;
+    pattern: MeshPattern;
     size: number; // px radius
     opacity: number; // 0–1
     speed: number; // ambient drift speed
@@ -77,7 +85,7 @@ export interface HeroEffectSettings {
 export const HERO_EFFECT_DEFAULTS: HeroEffectSettings = {
   mode: "all",
   fallback: "static",
-  particles: { size: 1.6, opacity: 0.6, speed: 0.35, randomness: 0.12, return_speed: 0.05, link_density: 1, link_distance: 64 },
+  particles: { shape: "circle", pattern: "triangles", size: 1.6, opacity: 0.6, speed: 0.35, randomness: 0.12, return_speed: 0.05, link_density: 1, link_distance: 64 },
   interaction: { repulsion: true, force: 1, radius: 150, response: 0.18, release: 0.06, touch: true, click_wave: true, wave_strength: 1, wave_speed: 1 },
   colors: { source: "custom", particle: "#3D7BFF", link: "#2563EB", glow: "#00C8FD", gradient: true, gradient_to: "#00C8FD", intensity: 0.55, link_opacity: 0.22, hover_glow: 0.75 },
   area: { height: 100, width: 100, position: "center", center_density: 1, edge_density: 0.8, text_clarity: 0.8, protect_padding: 28 },
@@ -166,6 +174,8 @@ export function sanitizeHeroEffect(input: unknown): HeroEffectSettings {
     mode: pickOne(o.mode, ["all", "desktop", "off"] as const, D.mode),
     fallback: pickOne(o.fallback, ["static", "glow", "none"] as const, D.fallback),
     particles: {
+      shape: pickOne(p.shape, PARTICLE_SHAPES, D.particles.shape),
+      pattern: pickOne(p.pattern, MESH_PATTERNS, D.particles.pattern),
       size: r("size", p.size, D.particles.size),
       opacity: r("opacity", p.opacity, D.particles.opacity),
       speed: r("speed", p.speed, D.particles.speed),
