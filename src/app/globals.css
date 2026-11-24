@@ -1,6 +1,7 @@
 @import "tailwindcss";
 @import "./motion.css";
 @import "./design.css";
+@import "./site.css";
 
 /* ALITQAN design system.
    Brand values (colors, fonts, radius) are injected at runtime from the

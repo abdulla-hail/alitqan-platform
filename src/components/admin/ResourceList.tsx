@@ -21,7 +21,7 @@ function SortableRow({ id, disabled, children }: { id: string; disabled: boolean
     </button>
   );
   return (
-    <li ref={setNodeRef} style={style} className={`card flex items-center gap-3 p-3 ${isDragging ? "shadow-xl ring-2 ring-primary" : ""}`}>
+    <li ref={setNodeRef} style={style} className={`lift flex flex-wrap items-center gap-3 p-3 sm:flex-nowrap ${isDragging ? "shadow-xl ring-2 ring-primary" : ""}`}>
       {children(handle)}
     </li>
   );

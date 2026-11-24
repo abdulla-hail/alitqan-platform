@@ -29,13 +29,16 @@ export default async function CmsPage({ params }: SlugParams) {
   return (
     <>
       {!hasHeader && (
-        <header className="relative overflow-hidden border-b border-line">
-          <div className="bg-measure bg-measure-fade pointer-events-none absolute inset-0 opacity-70" aria-hidden />
-          <div className="container-x relative py-16 lg:py-20">
-            <h1 className="h-display">{pick(page.title, locale, ctx.defaultLocale)}</h1>
-            {page.kind === "legal" && (
-              <p className="mt-4 text-sm text-muted">{formatDate(page.updated_at, locale)}</p>
-            )}
+        <header className="px-2 pt-3 sm:px-4">
+          <div className="panel-soft relative isolate overflow-hidden">
+            <div className="bg-measure bg-measure-fade pointer-events-none absolute inset-0 -z-10 opacity-60" aria-hidden />
+            <div className="container-x flex flex-col items-center py-14 text-center sm:py-20">
+              <p className="badge-pill hero-in">{pick(ctx.brand?.name, locale, ctx.defaultLocale)}</p>
+              <h1 className="h-display hero-in mt-5" style={{ ["--i" as string]: 1 }}>{pick(page.title, locale, ctx.defaultLocale)}</h1>
+              {page.kind === "legal" && (
+                <p className="hero-in mt-4 text-sm text-muted" style={{ ["--i" as string]: 2 }}>{formatDate(page.updated_at, locale)}</p>
+              )}
+            </div>
           </div>
         </header>
       )}

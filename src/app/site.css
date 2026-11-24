@@ -1,0 +1,80 @@
+/* =====================================================================
+   ALITQAN · site components (v3 — informed by the Moltaqa audit, see
+   docs/MOLTAQA_REFERENCE_AUDIT.md). Rounded panels, pill navigation,
+   badge headings, icon tiles. Token-driven; RTL-first.
+   ===================================================================== */
+
+/* ---------- badge pill heading ---------- */
+.badge-pill { display: inline-flex; align-items: center; gap: 0.6rem; padding: 0.45rem 1rem; border-radius: 999px; border: 1px solid var(--color-line); background: var(--color-surface); font-size: 0.875rem; font-weight: 600; color: var(--color-fg); box-shadow: var(--shadow-sm); }
+.badge-pill::before, .badge-pill::after { content: ""; width: 0.5rem; height: 0.5rem; transform: rotate(45deg); background: var(--color-accent); flex: none; }
+.badge-pill::after { background: var(--color-primary); }
+
+/* ---------- panels ---------- */
+.panel { background: var(--color-surface); border: 1px solid var(--color-line); border-radius: calc(var(--radius) * 2); }
+.panel-soft { background: color-mix(in oklab, var(--color-primary) 5%, var(--color-surface)); border: 1px solid color-mix(in oklab, var(--color-primary) 12%, var(--color-line)); border-radius: calc(var(--radius) * 2); }
+.panel-brand { background: linear-gradient(150deg, color-mix(in oklab, var(--c-primary) 92%, black), color-mix(in oklab, var(--c-primary) 55%, var(--c-ink))); color: #fff; border-radius: calc(var(--radius) * 2); }
+.panel-brand { --color-fg: #fff; --color-muted: rgb(255 255 255 / 0.78); --color-line: rgb(255 255 255 / 0.16); }
+
+/* ---------- elevated card ---------- */
+.lift { background: var(--color-surface); border: 1px solid var(--color-line); border-radius: calc(var(--radius) * 1.4); box-shadow: var(--shadow-sm); transition: transform var(--dur-base) var(--ease-out), box-shadow var(--dur-base) ease, border-color var(--dur-base) ease; }
+html[data-hover="on"] .lift:hover, .lift:focus-within { transform: translateY(-4px); box-shadow: var(--shadow-lg); border-color: color-mix(in oklab, var(--color-primary) 35%, var(--color-line)); }
+
+/* ---------- header ---------- */
+.utility-bar { font-size: 0.8125rem; color: var(--color-muted); }
+.social-dot { display: grid; place-items: center; height: 1.9rem; min-width: 1.9rem; padding-inline: 0.35rem; border-radius: 999px; border: 1px solid color-mix(in oklab, var(--color-primary) 35%, var(--color-line)); color: var(--color-primary); font-size: 0.7rem; font-weight: 700; transition: background-color var(--dur-base) ease, color var(--dur-base) ease, transform var(--dur-base) var(--ease-spring); }
+.social-dot:hover { background: var(--color-primary); color: var(--color-on-primary); transform: translateY(-2px); }
+
+.nav-pills { position: relative; display: flex; align-items: center; gap: 0.15rem; padding: 0.3rem; border-radius: 999px; background: var(--color-subtle); border: 1px solid var(--color-line); }
+.nav-pill { position: relative; z-index: 1; display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.5rem 0.95rem; border-radius: 999px; font-size: 0.9rem; font-weight: 600; color: color-mix(in oklab, var(--color-fg) 72%, transparent); transition: color var(--dur-base) ease; white-space: nowrap; }
+.nav-pill svg { width: 1rem; height: 1rem; opacity: 0.7; transition: opacity var(--dur-base) ease, transform var(--dur-base) var(--ease-spring); }
+.nav-pill:hover { color: var(--color-fg); }
+.nav-pill:hover svg { opacity: 1; transform: translateY(-1px); }
+.nav-pill[aria-current="page"], .nav-pill[data-active="true"] { color: var(--color-on-primary); }
+.nav-pill[aria-current="page"] svg, .nav-pill[data-active="true"] svg { opacity: 1; }
+.nav-pill-bg { position: absolute; top: 0.3rem; bottom: 0.3rem; inset-inline-start: 0; left: 0; z-index: 0; border-radius: 999px; background: var(--color-primary); box-shadow: 0 6px 18px -8px var(--color-primary); width: var(--w, 0); transform: translateX(var(--x, 0)); opacity: var(--o, 0); transition: transform 480ms var(--ease-spring), width 480ms var(--ease-out), opacity 200ms ease; }
+[dir="rtl"] .nav-pill-bg { inset-inline-start: auto; }
+
+/* ---------- step cards with number block ---------- */
+.step-card { display: grid; grid-template-columns: auto 1fr; overflow: hidden; }
+.step-num { display: grid; place-items: center; min-width: 5.5rem; padding: 1.25rem; background: var(--color-primary); color: var(--color-on-primary); font-family: var(--font-display); font-size: 2.25rem; font-weight: 700; font-variant-numeric: tabular-nums; transition: background-color var(--dur-base) ease; }
+html[data-hover="on"] .step-card:hover .step-num { background: var(--color-accent); color: var(--color-on-accent); }
+
+/* ---------- numbered FAQ ---------- */
+.faq-item { border: 1px solid var(--color-line); border-radius: calc(var(--radius) * 1.2); background: var(--color-surface); transition: border-color var(--dur-base) ease, box-shadow var(--dur-base) ease; }
+.faq-item[open] { border-color: color-mix(in oklab, var(--color-primary) 45%, var(--color-line)); box-shadow: var(--shadow-md); border-inline-start-width: 4px; border-inline-start-color: var(--color-primary); }
+
+/* ---------- rotating word ---------- */
+.rotator { position: relative; display: inline-grid; vertical-align: bottom; overflow: hidden; }
+.rotator > span { grid-area: 1 / 1; transition: transform 600ms var(--ease-out), opacity 400ms ease; }
+.rotator > span[data-state="in"] { transform: none; opacity: 1; }
+.rotator > span[data-state="out"] { transform: translateY(-110%); opacity: 0; }
+.rotator > span[data-state="next"] { transform: translateY(110%); opacity: 0; }
+@media (prefers-reduced-motion: reduce) { .rotator > span { transition: none; } }
+
+/* ---------- journey connector lines ---------- */
+.journey-line { stroke-dasharray: 6 8; animation: dash-move 22s linear infinite; }
+@keyframes dash-move { to { stroke-dashoffset: -400; } }
+html[data-motion="off"] .journey-line { animation: none; }
+@media (prefers-reduced-motion: reduce) { .journey-line { animation: none; } }
+
+/* ---------- floating contact buttons ---------- */
+.fab { display: grid; place-items: center; width: 3.25rem; height: 3.25rem; border-radius: 999px; color: #fff; box-shadow: 0 10px 25px -10px rgb(0 0 0 / 0.5); transition: transform var(--dur-base) var(--ease-spring); }
+.fab:hover { transform: scale(1.08); }
+.fab::after { content: ""; position: absolute; inset: -6px; border-radius: inherit; border: 2px solid currentColor; opacity: 0; animation: fab-pulse 2.6s ease-out infinite; }
+@keyframes fab-pulse { 0% { opacity: 0.5; transform: scale(0.9); } 100% { opacity: 0; transform: scale(1.35); } }
+@media (prefers-reduced-motion: reduce) { .fab::after { animation: none; } }
+html[data-motion="off"] .fab::after { animation: none; }
+
+/* ---------- tabs strip (services explorer) ---------- */
+.tab-chip { display: flex; flex-direction: column; justify-content: space-between; gap: 1.5rem; min-width: 11rem; padding: 1rem 1.1rem; border-radius: calc(var(--radius) * 1.2); background: rgb(255 255 255 / 0.08); border: 1px solid rgb(255 255 255 / 0.14); color: #fff; text-align: start; transition: background-color var(--dur-base) ease, color var(--dur-base) ease, transform var(--dur-base) var(--ease-out); }
+.tab-chip:hover { background: rgb(255 255 255 / 0.14); transform: translateY(-2px); }
+.tab-chip[aria-selected="true"] { background: #fff; color: var(--c-ink); border-color: #fff; box-shadow: 0 18px 40px -20px rgb(0 0 0 / 0.6); }
+.tab-chip[aria-selected="true"] .tab-chip-icon { background: var(--c-primary); color: #fff; }
+.tab-chip-icon { display: grid; place-items: center; width: 2.5rem; height: 2.5rem; border-radius: 0.75rem; background: rgb(255 255 255 / 0.12); transition: background-color var(--dur-base) ease; }
+.scroll-x { overflow-x: auto; scrollbar-width: none; scroll-snap-type: x proximity; overscroll-behavior-x: contain; }
+.scroll-x::-webkit-scrollbar { display: none; }
+.scroll-x > * { scroll-snap-align: start; }
+
+/* header surfaces (override motion.css defaults) */
+.site-header[data-scrolled="false"], .site-header[data-scrolled="true"] { background: color-mix(in oklab, var(--color-surface) 88%, transparent); backdrop-filter: saturate(1.4) blur(14px); -webkit-backdrop-filter: saturate(1.4) blur(14px); border-bottom: 1px solid var(--color-line); }
+.site-header[data-scrolled="true"] { box-shadow: var(--shadow-md); }

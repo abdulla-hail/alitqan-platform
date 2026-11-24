@@ -41,7 +41,10 @@ export default async function PostPage({ params }: SlugParams) {
     <article>
       <JsonLd data={{ "@context": "https://schema.org", "@type": "BlogPosting", headline: L(post.title), description: L(post.excerpt), datePublished: post.published_at, dateModified: post.updated_at, author: post.author ? { "@type": "Person", name: L(post.author.name) } : undefined, image: post.cover_url ? (post.cover_url.startsWith("http") ? post.cover_url : `${base}${post.cover_url}`) : undefined, mainEntityOfPage: `${base}/${locale}/blog/${slug}`, inLanguage: locale }} />
       <JsonLd data={breadcrumbJsonLd([{ name: t("common.home"), url: `${base}/${locale}` }, { name: "Blog", url: `${base}/${locale}/blog` }, { name: L(post.title), url: `${base}/${locale}/blog/${slug}` }])} />
-      <header className="container-x max-w-4xl pb-10 pt-14 text-center lg:pt-20">
+      <header className="px-2 pt-3 sm:px-4">
+        <div className="panel-soft relative isolate overflow-hidden">
+        <div className="bg-measure bg-measure-fade pointer-events-none absolute inset-0 -z-10 opacity-60" aria-hidden />
+        <div className="container-x max-w-4xl pb-12 pt-12 text-center sm:pt-16">
         <div className="flex flex-wrap items-center justify-center gap-2 text-sm text-muted">
           {post.category && <Link href={`/${locale}/blog`} className="font-semibold text-primary">{L(post.category.name)}</Link>}
           <span className="rhombus scale-75" aria-hidden />
@@ -52,12 +55,14 @@ export default async function PostPage({ params }: SlugParams) {
         <h1 className="h-display mt-5 animate-rise">{L(post.title)}</h1>
         <p className="lead mx-auto mt-5 max-w-2xl">{L(post.excerpt)}</p>
         {post.author && (
-          <p className="mt-6 text-sm">{t("blog.by")} <span className="font-semibold">{L(post.author.name)}</span> · <span className="text-muted">{L(post.author.job_title)}</span></p>
+          <p className="mt-6 inline-flex items-center gap-2 rounded-full border border-line bg-surface px-4 py-1.5 text-sm">{t("blog.by")} <span className="font-semibold">{L(post.author.name)}</span> · <span className="text-muted">{L(post.author.job_title)}</span></p>
         )}
+        </div>
+        </div>
       </header>
       {post.cover_url && (
-        <div className="container-x max-w-5xl">
-          <div className="relative aspect-[16/9] overflow-hidden rounded-brand-lg bg-subtle">
+        <div className="container-x mt-8 max-w-5xl">
+          <div className="relative aspect-[16/9] overflow-hidden rounded-[calc(var(--radius)*1.6)] bg-subtle shadow-[var(--shadow-lg)]">
             <SmartImage src={post.cover_url} alt={L(post.title)} priority className="object-cover" sizes="(min-width:1024px) 1024px, 100vw" />
           </div>
         </div>

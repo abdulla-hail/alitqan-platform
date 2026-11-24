@@ -51,7 +51,7 @@ function Sidebar({ mini, groups, activeHref, can }: { mini: boolean; groups: { t
                         href={i.href}
                         aria-current={on ? "page" : undefined}
                         title={mini ? i.label : undefined}
-                        className={`group relative flex items-center gap-3 rounded-lg py-2 text-sm font-medium transition-colors duration-200 ${mini ? "justify-center px-2" : "px-3"} ${on ? "bg-soft text-primary" : "text-fg/75 hover:bg-subtle hover:text-fg"}`}
+                        className={`group relative flex items-center gap-3 rounded-lg py-2 text-sm font-medium transition-colors duration-200 ${mini ? "justify-center px-2" : "px-3"} ${on ? "bg-primary text-on-primary shadow-[0_8px_20px_-10px_var(--color-primary)]" : "text-fg/75 hover:bg-subtle hover:text-fg"}`}
                       >
                         <i.icon className={`h-[18px] w-[18px] flex-none transition-transform duration-300 ${on ? "" : "group-hover:scale-110"}`} />
                         {!mini && <span className="flex-1 truncate">{i.label}</span>}

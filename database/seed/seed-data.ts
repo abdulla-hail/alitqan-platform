@@ -157,6 +157,12 @@ export const translations: Record<string, T> = {
   "footer.cta_title": t("لديك فكرة؟ لنصنعها بإتقان.", "Have an idea? Let's build it precisely."),
   "footer.cta_button": t("ابدأ مشروعك", "Start a project"),
   "footer.back_to_top": t("للأعلى", "Back to top"),
+  "hero.specialized": t("متخصصون في", "Specialists in"),
+  "common.contact_us": t("تواصل معنا", "Contact us"),
+  "services.details": t("تفاصيل الخدمة", "Service details"),
+  "projects.details": t("تفاصيل المشروع", "Project details"),
+  "stats.rating": t("متوسط تقييم عملائنا", "Average client rating"),
+  "common.call": t("اتصل بنا", "Call us"),
 };
 
 export const settings: Record<string, { value: unknown; is_public?: boolean }> = {
@@ -432,6 +438,18 @@ export const pages: { slug: string; kind: string; title: T; summary: T; sections
   { slug: "blog", kind: "system", title: t("المدونة", "Blog"), summary: t("مقالات في التقنية والتصميم والنمو.", "Articles on technology, design and growth."), sections: [H("المدونة", "Blog", "أفكار ودروس من الميدان", "Ideas and lessons from the field")] },
   { slug: "contact", kind: "system", title: t("تواصل معنا", "Contact"), summary: t("تواصل مع فريق إتقان.", "Get in touch with ALITQAN."), sections: [H("تواصل معنا", "Contact", "يسعدنا سماعك", "We'd love to hear from you", "راسلنا أو اتصل بنا وسنرد خلال يوم عمل.", "Write or call us and we'll reply within one business day.")] },
   { slug: "request", kind: "system", title: t("اطلب مشروعك", "Start a project"), summary: t("أرسل تفاصيل مشروعك أو اطلب عرض سعر.", "Send your project details or request a quote."), sections: [H("طلب مشروع", "Project request", "أخبرنا عن مشروعك", "Tell us about your project", "كلما زادت التفاصيل، كان عرضنا أدق.", "The more detail you share, the more precise our proposal.")] },
+  {
+    slug: "faq", kind: "custom", title: t("الأسئلة الشائعة", "FAQ"), summary: t("إجابات واضحة عن خدمات إتقان وطريقة العمل.", "Clear answers about ALITQAN services and how we work."),
+    sections: [
+      H("مركز المساعدة", "Help centre", "الأسئلة الشائعة", "Frequently asked questions", "كل ما تحتاج معرفته قبل بدء مشروعك.", "Everything you need to know before starting your project."),
+      { type: "faq", content: { eyebrow: t("أسئلة شائعة", "FAQ"), title: t("إجابات سريعة", "Quick answers"), items: [
+        { question: t("كم تكلفة المشروع؟", "How much does a project cost?"), answer: t("تعتمد على النطاق. بعد جلسة الاكتشاف نرسل عرضاً مفصلاً.", "It depends on scope. After discovery we send a detailed proposal.") },
+        { question: t("هل تعملون مع عملاء خارج المملكة؟", "Do you work with clients abroad?"), answer: t("نعم، نعمل عن بعد مع عملاء في عدة دول.", "Yes, we work remotely with clients in several countries.") },
+        { question: t("هل أستطيع تعديل موقعي بنفسي؟", "Can I edit my website myself?"), answer: t("نعم، نسلّم لوحة تحكم سهلة وتدريباً عليها.", "Yes, we deliver an easy CMS and training.") },
+      ] } },
+      { type: "cta", settings: { background: "brand" }, content: { title: t("لم تجد إجابتك؟", "Didn't find your answer?"), subtitle: t("فريقنا جاهز للإجابة عن أسئلتك.", "Our team is ready to help."), primary_label: t("تواصل معنا", "Contact us"), primary_href: "/contact" } },
+    ],
+  },
   { slug: "privacy", kind: "legal", title: t("سياسة الخصوصية", "Privacy policy"), summary: t("كيف نجمع بياناتك ونستخدمها.", "How we collect and use your data."), sections: [{ type: "rich_text", content: { title: t("سياسة الخصوصية", "Privacy policy"), body: t("## البيانات التي نجمعها\nنجمع البيانات التي ترسلها عبر نماذج التواصل وطلب المشاريع فقط (الاسم، البريد، الهاتف، تفاصيل الطلب والمرفقات).\n\n## كيف نستخدمها\nللرد على طلبك والتواصل معك بشأنه. لا نبيع بياناتك ولا نشاركها مع أطراف ثالثة لأغراض تسويقية.\n\n## الحماية والاحتفاظ\nتُخزن البيانات في خوادم آمنة ويصل إليها الموظفون المخولون فقط، ونحتفظ بها للمدة اللازمة لخدمتك.\n\n## حقوقك\nيمكنك طلب الاطلاع على بياناتك أو تصحيحها أو حذفها عبر صفحة التواصل.\n\n*هذا نص نموذجي ويجب مراجعته قانونياً قبل الإطلاق.*", "## Data we collect\nOnly what you send through the contact and project request forms (name, email, phone, request details and attachments).\n\n## How we use it\nTo answer your request and contact you about it. We never sell your data or share it with third parties for marketing.\n\n## Protection and retention\nData is stored on secure servers, accessible only to authorised staff, and kept only as long as needed to serve you.\n\n## Your rights\nYou can ask to access, correct or delete your data via the contact page.\n\n*This is template text and must be reviewed by a lawyer before launch.*") } }] },
   { slug: "terms", kind: "legal", title: t("الشروط والأحكام", "Terms & conditions"), summary: t("شروط استخدام خدمات إتقان.", "Terms for using ALITQAN services."), sections: [{ type: "rich_text", content: { title: t("الشروط والأحكام", "Terms & conditions"), body: t("## القبول\nباستخدامك هذا الموقع فإنك توافق على هذه الشروط.\n\n## الخدمات\nتخضع كل خدمة لعرض واتفاقية مستقلة تحدد النطاق والتكلفة والمدة.\n\n## الملكية الفكرية\nمحتوى هذا الموقع ملك لإتقان ما لم يُذكر خلاف ذلك.\n\n*نص نموذجي — يُراجع قانونياً.*", "## Acceptance\nBy using this website you agree to these terms.\n\n## Services\nEach service is governed by a separate proposal and agreement defining scope, cost and duration.\n\n## Intellectual property\nThis website's content belongs to ALITQAN unless stated otherwise.\n\n*Template text — to be reviewed by a lawyer.*") } }] },
   { slug: "acceptable-use", kind: "legal", title: t("سياسة الاستخدام", "Acceptable use policy"), summary: t("قواعد استخدام الموقع.", "Rules for using this website."), sections: [{ type: "rich_text", content: { title: t("سياسة الاستخدام", "Acceptable use policy"), body: t("يُمنع استخدام الموقع أو نماذجه لإرسال محتوى مسيء أو رسائل مزعجة أو ملفات ضارة، أو محاولة الوصول غير المصرح به إلى أي جزء من الأنظمة.\n\n*نص نموذجي — يُراجع قانونياً.*", "You may not use this website or its forms to send abusive content, spam or malicious files, or attempt unauthorised access to any part of our systems.\n\n*Template text — to be reviewed by a lawyer.*") } }] },
@@ -452,6 +470,7 @@ export const navigation = {
     { label: t("ابدأ", "Start"), href: "#", children: [{ label: t("اطلب مشروعك", "Start a project"), href: "/request" }, { label: t("أعمالنا", "Our work"), href: "/projects" }] },
   ],
   footer_bottom: [
+    { label: t("الأسئلة الشائعة", "FAQ"), href: "/faq" },
     { label: t("سياسة الخصوصية", "Privacy"), href: "/privacy" },
     { label: t("الشروط والأحكام", "Terms"), href: "/terms" },
     { label: t("سياسة الاستخدام", "Acceptable use"), href: "/acceptable-use" },

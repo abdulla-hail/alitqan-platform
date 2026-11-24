@@ -234,7 +234,7 @@ export function StatusBadge({ status, d }: { status: string; d: AdminDict }) {
 
 export function Empty({ children, icon: I = Inbox, action }: { children: React.ReactNode; icon?: React.ComponentType<{ className?: string }>; action?: React.ReactNode }) {
   return (
-    <div className="card grid place-items-center gap-3 border-dashed p-12 text-center text-muted" data-anim="fade">
+    <div className="panel grid place-items-center gap-3 border-dashed p-12 text-center text-muted" data-anim="fade">
       <span className="grid h-14 w-14 place-items-center rounded-2xl bg-soft text-primary"><I className="h-6 w-6" /></span>
       <div>{children}</div>
       {action}

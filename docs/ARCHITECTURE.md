@@ -32,3 +32,9 @@
 - **motion (Framer Motion) 14.12.0** is used only for exit animations: mobile menu, nav dropdowns, admin drawer, modals and toasts (`LazyMotion` + `domAnimation`, `m.*`).
 - **Projects slider**: native scroll-snap track (touch/momentum), server-prepared `srcset` (`lib/images.ts` → `getImageProps`) with a separate mobile image via `<picture>`, autoplay paused on hover/focus/touch/hidden tab/off-screen/reduced motion, WCAG pause button, keyboard (mirrored in RTL).
 - **Typography**: `lib/brand/fonts.ts` catalog with real weights per family → one Google Fonts request with only enabled & existing weights; uploaded WOFF2/WOFF fonts (`custom_fonts`) are served by `@font-face`; separate admin font.
+
+## Visual system v3 (Moltaqa-inspired)
+- `src/app/site.css` holds the v3 primitives: `.panel`, `.panel-soft`, `.panel-brand`, `.lift`, `.badge-pill`, `.nav-pill(s)`, `.step-card`, `.faq-item`, `.rotator`, `.journey-line`, `.fab`, `.tab-chip`, `.scroll-x`.
+- Header: `Header.tsx` (server) → `HeaderShell`, `NavLinks` (pill nav + `MegaPanel`, ≥1280px) and `MobileNav` (floating card, focus trap, <1280px) in `NavClient.tsx`.
+- Client islands: `ServicesExplorer` (ARIA tabs), `ProjectsShowcase` (filter + snap rail), `Rotator` (respects reduced motion).
+- See `docs/MOLTAQA_REFERENCE_AUDIT.md` for what was studied and adopted (no Moltaqa assets/text were copied).
